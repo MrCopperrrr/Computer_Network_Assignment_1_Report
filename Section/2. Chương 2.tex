@@ -1,10 +1,47 @@
 \part*{Chương 2: Cơ sở lý thuyết}
 \addcontentsline{toc}{part}{Chương 2: Cơ sở lý thuyết}
+Chương này trình bày các khái niệm và công nghệ nền tảng được sử dụng làm cơ sở để thiết kế và hiện thực hệ thống ứng dụng chat.
 %============================================================================
 
-\section*{1. Mô hình Client-Server và Peer-to-Peer (P2P)}
-\addcontentsline{toc}{section}{1. Mô hình Client-Server và Peer-to-Peer (P2P)}
+\section*{1. Mô hình giao tiếp mạng}
+\addcontentsline{toc}{section}{1. Mô hình giao tiếp mạng}
+Trong kiến trúc ứng dụng mạng, có hai mô hình giao tiếp chính là \textbf{Client-Server} và \textbf{Peer-to-Peer (P2P)}. Hệ thống được xây dựng trong đề tài này là một ứng dụng lai (hybrid) kết hợp sức mạnh của cả hai mô hình.
 
+\subsection*{Mô hình Client-Server}
+Mô hình Client-Server là kiến trúc phổ biến nhất trong các ứng dụng mạng, được đặc trưng bởi sự phân chia vai trò rõ rệt giữa các thành phần tham gia:
+
+\begin{itemize}
+    \item \textbf{Server (Máy chủ):} Là tiến trình luôn hoạt động, có địa chỉ cố định (IP và port), lắng nghe các yêu cầu từ bên ngoài và cung cấp tài nguyên hoặc dịch vụ cho client.
+    \item \textbf{Client (Máy khách):} Là tiến trình chủ động kết nối đến server để yêu cầu tài nguyên hoặc dịch vụ. Client không giao tiếp trực tiếp với các client khác.
+\end{itemize}
+
+\textbf{Áp dụng trong dự án:} Giai đoạn khởi tạo và khám phá của ứng dụng chat được xây dựng dựa trên mô hình Client-Server. Trong đó:
+
+\begin{itemize}
+    \item \textbf{Tracker Server} đóng vai trò là Server. Nó có địa chỉ cố định, luôn trực tuyến và cung cấp dịch vụ quản lý, đăng ký và cung cấp danh sách người dùng.
+    \item \textbf{Peer Client} đóng vai trò là Client. Mỗi khi khởi động, nó chủ động kết nối đến Tracker Server để đăng ký thông tin và lấy danh sách các peer khác đang hoạt động.
+\end{itemize}
+
+\subsection*{Mô hình Peer-to-Peer (P2P)}
+Trái ngược với mô hình Client-Server, mô hình P2P không có một máy chủ trung tâm cố định. Thay vào đó, các máy tính trong mạng (peer) có vai trò tương đương nhau. Mỗi peer vừa có thể là client (khởi tạo kết nối) vừa có thể là server (chấp nhận kết nối).
+
+\textbf{Áp dụng trong dự án:} Giai đoạn giao tiếp chính của ứng dụng chat dựa trên mô hình P2P. Cụ thể, sau khi nhận thông tin địa chỉ từ Tracker Server, các Peer Client sẽ:
+
+\begin{itemize}
+    \item Mở một cổng (port) để lắng nghe, hoạt động như server đối với các peer khác.
+    \item Chủ động sử dụng địa chỉ IP và port của peer khác để thiết lập kết nối TCP trực tiếp, hoạt động như client.
+    \item Sau khi kết nối được thiết lập, trao đổi tin nhắn trực tiếp mà không cần sự can thiệp của Tracker Server.
+\end{itemize}
+
+\subsection*{Mô hình lai (Hybrid)}
+Mô hình lai kết hợp các ưu điểm của cả Client-Server và P2P. Nó sử dụng máy chủ trung tâm cho các tác vụ đòi hỏi sự tin cậy và quản lý tập trung, đồng thời tận dụng khả năng kết nối trực tiếp của P2P cho các tác vụ cần hiệu suất cao và khả năng mở rộng.
+
+\textbf{Áp dụng trong dự án:} Ứng dụng chat là hệ thống hybrid điển hình:
+
+\begin{itemize}
+    \item \textbf{Giai đoạn khám phá (discovery):} Sử dụng mô hình Client-Server. Tracker Server giúp peer mới tìm thấy các peer khác trong mạng.
+    \item \textbf{Giai đoạn giao tiếp (communication):} Sử dụng mô hình P2P. Trao đổi tin nhắn trực tiếp giúp giảm độ trễ, tăng tính riêng tư và giảm tải cho Tracker Server, nâng cao khả năng mở rộng.
+\end{itemize}
 %============================================================================
 \section*{2. Lập trình Socket và Luồng (Socket \& Threading)}
 \addcontentsline{toc}{section}{2. Lập trình Socket và Luồng (Socket \& Threading)}
