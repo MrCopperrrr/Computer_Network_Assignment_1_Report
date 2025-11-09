@@ -31,7 +31,36 @@ Thông qua việc hoàn thành hai nhiệm vụ trên, đề tài hướng đế
 %============================================================================
 \section*{2. Phạm vi thực hiện}
 \addcontentsline{toc}{section}{2. Phạm vi thực hiện}
+Để đáp ứng các mục tiêu đã đề ra, dự án tập trung thiết kế và hiện thực một hệ thống hoàn chỉnh với các chức năng cốt lõi sau:
 
+\begin{itemize}
+    \item \textbf{HTTP Server và Proxy cơ bản:} Xây dựng thành công máy chủ HTTP từ thư viện \textit{socket} cấp thấp, có khả năng xử lý yêu cầu GET và POST. Hệ thống cũng bao gồm Proxy Server đơn giản để chuyển tiếp request HTTP, minh họa cho kiến trúc nhiều lớp trong ứng dụng web thực tế.
+    
+    \item \textbf{Cơ chế xác thực và quản lý phiên:} Hiện thực quy trình xác thực người dùng. Sau khi đăng nhập thành công, máy chủ thiết lập HTTP Cookie trên trình duyệt để duy trì trạng thái phiên – một yếu tố cơ bản trong các ứng dụng web hiện đại.
+    
+    \item \textbf{Kiến trúc Ứng dụng Chat Hybrid:} Gồm hai thành phần chính:
+    \begin{itemize}
+        \item \textit{Tracker Server:} Đóng vai trò máy chủ trung tâm, quản lý việc đăng ký, xác thực và khám phá người dùng.
+        \item \textit{Peer Client:} Vừa là client của Tracker Server, vừa là server trong các kết nối P2P.
+    \end{itemize}
+    
+    \item \textbf{Giao thức Client-Server cho việc khám phá Peer:} Cho phép Peer Client gửi thông tin (địa chỉ IP, port) lên Tracker Server để đăng ký, đồng thời truy vấn danh sách các peer khác đang trực tuyến.
+    
+    \item \textbf{Giao thức Peer-to-Peer để giao tiếp trực tiếp:} Hai Peer Client có thể thiết lập kết nối TCP trực tiếp sau khi biết địa chỉ của nhau. Cơ chế “bắt tay” (handshake) được triển khai để xác nhận kết nối trước khi trao đổi dữ liệu.
+    
+    \item \textbf{Hỗ trợ đa dạng hình thức Chat:} 
+    \begin{itemize}
+        \item Chat riêng giữa hai peer.
+        \item Chat nhóm qua các kênh chung (\#general, \#test, ...).
+        \item Kênh phát sóng (\#broadcast) gửi tin đến toàn bộ người dùng trực tuyến.
+    \end{itemize}
+    
+    \item \textbf{Tích hợp giao diện Web:} Xây dựng giao diện người dùng bằng HTML, CSS và JavaScript, mang lại trải nghiệm chat trực quan và thân thiện.
+    
+    \item \textbf{Giao tiếp thời gian thực qua WebSocket:} Sử dụng giao thức WebSocket để kết nối hai chiều giữa backend Python và giao diện người dùng trên trình duyệt, đảm bảo phản hồi tức thì khi có tin nhắn mới.
+    
+    \item \textbf{Duy trì trạng thái đăng nhập phía Client:} Lưu thông tin phiên làm việc bằng \textit{localStorage}, giúp người dùng tự động kết nối lại mà không cần thao tác thủ công, nâng cao trải nghiệm sử dụng.
+\end{itemize}
 
 %============================================================================
 \section*{3. Bố cục báo cáo}
