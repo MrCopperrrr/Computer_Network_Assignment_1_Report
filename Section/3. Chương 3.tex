@@ -50,6 +50,125 @@ Kiến trúc này gồm ba thành phần chính, mỗi thành phần có vai tr�
 \section*{2. Thiết kế các Module chính}
 \addcontentsline{toc}{section}{2. Thiết kế các Module chính}
 
+Hệ thống được cấu thành từ ba module chính, hoạt động độc lập nhưng tương tác chặt chẽ với nhau: \textbf{Tracker Server}, \textbf{Peer Client} và \textbf{Giao diện Web}. Thiết kế của mỗi module được tối ưu hóa cho vai trò cụ thể của nó.
+
+\subsection*{Tracker Server}
+
+Tracker Server được xây dựng như một dịch vụ API RESTful đơn giản bằng framework WeApRous. Nó quản lý trạng thái tập trung của toàn bộ mạng lưới P2P. Để đảm bảo an toàn dữ liệu khi nhiều peer truy cập đồng thời, các biến toàn cục như \texttt{peers\_list} và \texttt{channels\_list} được bảo vệ bằng \texttt{threading.Lock}.
+
+Các API chính của Tracker Server bao gồm:
+
+\begin{itemize}
+    \item \textbf{API /login} \\
+    Phương thức: POST \\
+    Chức năng: Xác thực danh tính người dùng dựa trên \texttt{username} và \texttt{password}. \\
+    Input (JSON Body):
+    \begin{verbatim}
+    {"username": "<tên>", "password": "<mật khẩu>"}
+    \end{verbatim}
+    Output (JSON):
+
+    \begin{itemize}
+        \item Thành công:
+        \begin{verbatim}
+        {"status": "success", "token": "token_<tên>"}
+        \end{verbatim}
+        \item Thất bại:
+        \begin{verbatim}
+        {"status": "failed", "message": "Invalid credentials"}
+        \end{verbatim}
+    \end{itemize}
+
+    \item \textbf{API /submit-info} \\
+    Phương thức: POST \\
+    Chức năng: Cho phép một peer đăng ký hoặc cập nhật thông tin với Tracker, bao gồm các kênh tham gia. \\
+    Input (JSON Body):
+    \begin{verbatim}
+    {"username": "<tên>", 
+    "ip": "<địa chỉ IP>", 
+    "port": <số port>, 
+    "channels": ["<tên kênh>"]}
+    \end{verbatim}
+    Output (JSON):
+    \begin{verbatim}
+    {"status": "success", 
+    "peer_id": <id>, 
+    "total_peers": <số lượng>}
+    \end{verbatim}
+
+    \item \textbf{API /add-list} \\
+    Phương thức: POST \\
+    Chức năng: Cho phép peer thông báo tham gia một kênh chat mới. \\
+    Input (JSON Body):
+    \begin{verbatim}
+    {"username": "<tên>", "channel": "<tên kênh>"}
+    \end{verbatim}
+    Output (JSON):
+    \begin{verbatim}
+    {"status": "success", "channel": "<tên kênh>", "members": ["<thành viên>"]}
+    \end{verbatim}
+
+    \item \textbf{API /get-list} \\
+    Phương thức: GET hoặc POST \\
+    Chức năng: Cung cấp danh sách các peer đang trực tuyến, có thể lọc theo kênh. \\
+    Input (JSON Body, tùy chọn):
+    \begin{verbatim}
+    {} 
+    hoặc 
+    {"channel": "<tên kênh>"}
+    \end{verbatim}
+    Output (JSON):
+    \begin{verbatim}
+    {"status": "success", "peers": [{"username": ..., "ip": ..., "port": ...}]}
+    \end{verbatim}
+\end{itemize}
+
+\subsection*{Peer Client}
+
+Peer Client là module phức tạp nhất, được thiết kế để chạy như một tiến trình nền đa nhiệm. Khi \texttt{peer\_client.py} được thực thi, hàm \texttt{start()} sẽ khởi tạo ba server độc lập, mỗi server chạy trên một luồng riêng để tránh block lẫn nhau:
+
+\begin{itemize}
+    \item \texttt{\_run\_p2p\_server}: mở socket TCP trên \texttt{peer\_port}, lắng nghe kết nối P2P từ các peer khác.
+    \item \texttt{\_run\_http\_server}: mở TCPServer trên \texttt{http\_port}, phục vụ giao diện web \texttt{chat.html} và xử lý các yêu cầu HTTP đặc biệt như tạo cookie.
+    \item \texttt{\_run\_websocket\_server}: mở server WebSocket trên \texttt{websocket\_port}, sẵn sàng nhận kết nối từ giao diện web để giao tiếp hai chiều.
+\end{itemize}
+
+\subsubsection*{Luồng kết nối P2P (Handshake)}
+
+Quy trình thiết lập kết nối trực tiếp giữa hai peer (ví dụ Alice và Bob) được thiết kế theo cơ chế "handshake":
+
+\begin{enumerate}
+    \item \textbf{Alice (khởi tạo):} Gọi hàm \texttt{connect\_peer} để tạo socket TCP mới và gửi request connect đến Bob.
+    \item \textbf{Bob (lắng nghe):} Hàm \texttt{\_handle\_peer\_connection} nhận kết nối, đọc tin nhắn đầu tiên.
+    \item \textbf{Alice gửi handshake:} Gửi JSON:
+    \begin{verbatim}
+    {"type": "handshake", "username": "alice"}
+    \end{verbatim}
+    \item \textbf{Bob phản hồi:} Nhận handshake, lưu socket và gửi JSON:.
+    \begin{verbatim}
+    {"type": "handshake_ack", "username": "bob"}
+    \end{verbatim}
+    \item \textbf{Alice nhận ACK:} Xác nhận kết nối thành công, lưu socket.
+    \item \textbf{Bắt đầu lắng nghe:} Mỗi kết nối tạo luồng \texttt{\_listen\_to\_peer} để nhận tin nhắn tương lai.
+\end{enumerate}
+
+\subsection*{Giao diện Web (chat.html)}
+
+Giao diện được thiết kế như một \textit{Single-Page Application} (SPA) đơn giản, nhận dữ liệu từ \texttt{peer\_client.py}.
+
+\begin{itemize}
+    \item \textbf{Tải trang và tự động điền:} Peer Client "tiêm" username và peer\_port vào HTML. JavaScript điền form tự động.
+    \item \textbf{Tự động kết nối (Session):} Kiểm tra \texttt{localStorage}. Nếu tìm thấy phiên hợp lệ, bỏ qua màn hình đăng nhập và tự khởi tạo WebSocket.
+    \item \textbf{Kết nối thủ công:} Nếu không có session, người dùng nhập thông tin, nhấn "Connect", lưu session và mở WebSocket.
+    \item \textbf{Giao tiếp qua WebSocket:}
+    \begin{itemize}
+        \item \textbf{Gửi lệnh:} Hành động người dùng (ví dụ gõ tin nhắn) được đóng gói thành lệnh dạng chuỗi và gửi qua WebSocket.
+        \item \textbf{Nhận dữ liệu:} JavaScript lắng nghe sự kiện \texttt{onmessage} để nhận tin nhắn mới hoặc danh sách peer cập nhật.
+        \item \textbf{Cập nhật giao diện:} Dựa trên loại dữ liệu, các hàm \texttt{displayMessages}, \\\texttt{updatePeerList} cập nhật giao diện liên tục.
+    \end{itemize}
+\end{itemize}
+
+
 %============================================================================
 \section*{3. Thiết kế Giao thức}
 \addcontentsline{toc}{section}{3. Thiết kế Giao thức}
