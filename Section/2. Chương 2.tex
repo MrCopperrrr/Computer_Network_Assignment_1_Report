@@ -146,3 +146,44 @@ Như vậy, Cookie đóng vai trò như "thẻ căn cước", giúp server nhậ
 %============================================================================
 \section*{4. Giao thức WebSocket}
 \addcontentsline{toc}{section}{4. Giao thức WebSocket}
+Trong khi HTTP là giao thức lý tưởng cho mô hình yêu cầu-phản hồi (request-response) truyền thống của web, nó bộc lộ hạn chế đối với các ứng dụng đòi hỏi tính tương tác cao và thời gian thực như ứng dụng chat. Để khắc phục, dự án đã tích hợp giao thức WebSocket làm kênh giao tiếp chính giữa backend logic (\texttt{peer\_client.py}) và giao diện người dùng trên trình duyệt (\texttt{chat.html}).
+
+Mô hình HTTP hoạt động theo dạng \textit{half-duplex}, do client khởi tạo. Client gửi request, server trả về response, rồi kết nối có thể bị đóng. Trong ứng dụng chat, điều này dẫn đến hai vấn đề chính:
+\begin{itemize}
+    \item \textbf{Độ trễ cao:} Client phải liên tục gửi request "hỏi thăm" server để kiểm tra tin nhắn mới (Polling), tạo ra nhiều request thừa, tốn tài nguyên và tăng độ trễ.
+    \item \textbf{Server không thể chủ động gửi tin:} Server không thể đẩy dữ liệu xuống client, luôn phải chờ client gửi request.
+\end{itemize}
+
+WebSocket giải quyết vấn đề trên bằng cách tạo kênh giao tiếp \textit{full-duplex} và bền vững (persistent) giữa client và server:
+\begin{itemize}
+    \item \textbf{Giao tiếp hai chiều:} Cả client và server có thể gửi dữ liệu bất cứ lúc nào mà không cần request mới.
+    \item \textbf{Thời gian thực:} Dữ liệu được gửi gần như ngay lập tức, loại bỏ độ trễ của việc tạo kết nối HTTP mới.
+    \item \textbf{Hiệu quả:} Giảm overhead so với HTTP, sau một lần handshake ban đầu, các frame dữ liệu rất nhỏ gọn.
+\end{itemize}
+
+\subsection*{Áp dụng trong dự án}
+WebSocket là cầu nối giữa "bộ não" P2P (\texttt{peer\_client.py}) và "giao diện điều khiển" (\texttt{chat.html}). Khi một peer nhận tin nhắn P2P từ peer khác, nó có thể ngay lập tức đẩy tin nhắn lên giao diện trình duyệt thông qua kết nối WebSocket, giúp người dùng thấy tin nhắn gần như tức thời.
+
+\subsection*{So sánh HTTP và WebSocket}
+
+\begin{center}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Tiêu chí} & \textbf{HTTP} & \textbf{WebSocket} \\
+\hline
+Mô hình & Yêu cầu-Phản hồi (Request-Response) & Song công toàn phần (Full-Duplex) \\
+\hline
+Khởi tạo & Luôn do client khởi tạo & Cả client và server đều có thể gửi dữ liệu sau khi kết nối \\
+\hline
+Kết nối & Không bền vững (có thể tạo kết nối mới cho mỗi request) & Bền vững (một kết nối duy nhất suốt phiên) \\
+\hline
+Độ trễ & Cao (do overhead cho mỗi request) & Rất thấp (sau handshake ban đầu) \\
+\hline
+Phù hợp cho & Tải tài nguyên, gọi API RESTful & Ứng dụng thời gian thực (chat, game online, bảng giá) \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection*{Luồng thiết lập kết nối WebSocket}
+Quá trình bắt đầu bằng một request HTTP từ client chứa header \texttt{Upgrade: websocket}. Nếu server hỗ trợ, nó trả về response HTTP với mã trạng thái \texttt{101 Switching Protocols}. Kể từ đó, kết nối TCP ban đầu được nâng cấp thành kết nối WebSocket và cả hai bên bắt đầu trao đổi dữ liệu theo giao thức mới. Thư viện \texttt{websockets} trong Python và đối tượng WebSocket trong JavaScript tự động xử lý quá trình này.
+
