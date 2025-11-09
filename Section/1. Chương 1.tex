@@ -4,6 +4,29 @@
 
 \section*{1. Đặt vấn đề và mục tiêu}
 \addcontentsline{toc}{section}{1. Đặt vấn đề và mục tiêu}
+Trong bối cảnh Internet và các ứng dụng mạng ngày càng phát triển mạnh mẽ, việc hiểu rõ và áp dụng được các nguyên lý cơ bản của mạng máy tính là điều cần thiết đối với sinh viên ngành Khoa học máy tính. 
+Các mô hình giao tiếp như \textbf{Client-Server} và \textbf{Peer-to-Peer (P2P)}, cùng với kỹ thuật lập trình socket, đóng vai trò nền tảng giúp kết nối các hệ thống và tạo nên các dịch vụ mạng hiện nay. 
+
+Bài tập lớn này được thực hiện nhằm áp dụng những kiến thức lý thuyết đã học trong môn \textit{Mạng máy tính} vào việc xây dựng một hệ thống phần mềm thực tế, qua đó giúp người học củng cố và hiểu sâu hơn cách các tiến trình mạng tương tác với nhau trong môi trường phân tán.
+
+\vspace{0.5em}
+\noindent
+Cụ thể, đề tài tập trung vào hai nhiệm vụ chính sau:
+
+\begin{itemize}
+    \item \textbf{Xây dựng HTTP Server có cơ chế quản lý phiên bằng Cookie:} 
+    Nhiệm vụ này yêu cầu sinh viên hiện thực một máy chủ web sử dụng thư viện \textit{socket} cơ bản của Python, có khả năng xử lý các yêu cầu HTTP (GET/POST) và đặc biệt là triển khai cơ chế xác thực người dùng. 
+    Hệ thống cần duy trì trạng thái đăng nhập thông qua việc sử dụng \textit{HTTP Cookie}, giúp làm rõ cách thức vượt qua tính chất \textit{stateless} của giao thức HTTP.
+
+    \item \textbf{Xây dựng ứng dụng chat lai (Hybrid Chat Application):} 
+    Ứng dụng này kết hợp linh hoạt hai mô hình Client-Server và P2P. 
+    Trong đó, mô hình \textit{Client-Server} được dùng để quản lý danh sách người dùng và kênh chat thông qua một \textit{Tracker Server}, còn mô hình \textit{P2P} cho phép các người dùng (Peer Client) kết nối trực tiếp và trao đổi tin nhắn mà không cần qua máy chủ trung gian. 
+    Mục tiêu là giúp sinh viên hiểu rõ cách thiết kế một hệ thống giao tiếp hai chiều có tính mở rộng cao và phản hồi thời gian thực.
+\end{itemize}
+
+\vspace{0.5em}
+\noindent
+Thông qua việc hoàn thành hai nhiệm vụ trên, đề tài hướng đến mục tiêu xây dựng một ứng dụng mạng hoàn chỉnh, minh họa rõ cách phối hợp giữa các tiến trình \textit{client}, \textit{server} và \textit{tracker} trong một kiến trúc hybrid hiện đại.
 
 %============================================================================
 \section*{2. Phạm vi thực hiện}
