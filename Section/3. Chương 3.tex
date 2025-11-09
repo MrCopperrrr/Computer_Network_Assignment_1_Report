@@ -32,7 +32,7 @@ Kiến trúc này gồm ba thành phần chính, mỗi thành phần có vai tr�
     \item \textbf{Vai trò Server P2P:} Mở một socket TCP trên port do người dùng chỉ định (\texttt{peer\_port}) và lắng nghe các kết nối từ các peer khác.
     \item \textbf{Vai trò Server giao diện (UI Server):} Chạy trên một luồng riêng, gồm:
     \begin{itemize}
-        \item \textbf{HTTP Server:} Chạy trên port \texttt{http\_port = peer\_port + 10000}, phục vụ file \texttt{chat.html} và tài nguyên tĩnh (CSS, hình ảnh), đồng thời cung cấp endpoint \texttt{/confirm-login} để thiết lập cookie.
+        \item \textbf{HTTP Server:} Chạy trên port \texttt{http\_port = peer\_port + 10000}, phục vụ file \texttt{chat.html} và tài nguyên tĩnh (CSS, hình ảnh), đồng thời cung cấp endpoint \\\texttt{/confirm-login} để thiết lập cookie.
         \item \textbf{WebSocket Server:} Chạy trên port \texttt{websocket\_port = peer\_port + 20000}, mở kênh giao tiếp hai chiều thời gian thực với giao diện web, nhận các lệnh từ người dùng và đẩy cập nhật tin nhắn lên trình duyệt.
     \end{itemize}
 \end{itemize}
