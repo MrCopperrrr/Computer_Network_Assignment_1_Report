@@ -91,6 +91,57 @@ Một vấn đề cơ bản với server đơn luồng là không thể phục v
 %============================================================================
 \section*{3. Giao thức HTTP và Cookie}
 \addcontentsline{toc}{section}{3. Giao thức HTTP và Cookie}
+HTTP (HyperText Transfer Protocol) là giao thức nền tảng của World Wide Web, hoạt động dựa trên mô hình Client-Server. Trong dự án, giao thức này được sử dụng cho việc giao tiếp giữa Peer Client và Tracker Server. Thay vì sử dụng các thư viện HTTP cấp cao, dự án hiện thực việc tạo và phân tích các thông điệp HTTP một cách thủ công qua socket để hiểu rõ bản chất của giao thức.
+
+Một phiên giao tiếp HTTP gồm một \textbf{request} từ client và một \textbf{response} từ server. Cả hai đều là các đoạn văn bản thô (plain text) tuân thủ định dạng nghiêm ngặt.
+
+\subsection*{HTTP Request}
+Một request từ client gửi lên server gồm ba phần chính:
+\begin{itemize}
+    \item \textbf{Start Line (Dòng bắt đầu):} Chứa phương thức (GET, POST), đường dẫn (Path) và phiên bản HTTP.
+    \item \textbf{Headers (Các dòng tiêu đề):} Cung cấp thông tin bổ sung, dưới dạng Key: Value. Header quan trọng nhất là \texttt{Host}, cho biết server nào đang được yêu cầu. Các header khác như \texttt{Content-Type} và \texttt{Content-Length} được dùng trong request POST để mô tả dữ liệu gửi đi.
+    \item \textbf{Body (Phần thân):} Chứa dữ liệu gửi kèm, ví dụ thông tin đăng nhập. Chỉ tồn tại với các request như POST.
+\end{itemize}
+
+\textbf{Ví dụ:} Một HTTP Request được tạo thủ công trong \texttt{peer\_client.py} để đăng ký với tracker:
+
+\begin{verbatim}
+POST /submit-info HTTP/1.1
+Host: 127.0.0.1:8001
+Content-Type: application/json
+Content-Length: 68
+
+{"username": "alice", "ip": "192.168.1.6", "port": 9101}
+\end{verbatim}
+
+\subsection*{HTTP Response}
+Một response từ server trả về cũng có cấu trúc tương tự:
+\begin{itemize}
+    \item \textbf{Status Line (Dòng trạng thái):} Phiên bản HTTP, mã trạng thái (200 OK, 404 Not Found, ...), và thông điệp trạng thái.
+    \item \textbf{Headers:} Ví dụ \texttt{Content-Type} cho biết loại dữ liệu trả về, \texttt{Content-Length} cho biết kích thước phần thân.
+    \item \textbf{Body:} Chứa nội dung thực sự của tài nguyên, ví dụ code HTML hoặc dữ liệu JSON.
+\end{itemize}
+
+\subsection*{Cookie}
+Một đặc tính cơ bản của HTTP là nó \textbf{vô trạng thái}, tức server không lưu thông tin về các request trước đó. Mỗi request được xử lý độc lập. Điều này gây khó khăn khi xây dựng các ứng dụng yêu cầu duy trì phiên đăng nhập.
+
+Để khắc phục, cơ chế \textbf{Cookie} được sử dụng. Cookie là mẩu thông tin nhỏ mà server gửi đến trình duyệt và yêu cầu lưu lại. Với mỗi request tiếp theo, trình duyệt sẽ tự động gửi lại cookie đến server.
+
+\textbf{Vai trò trong dự án:} Cookie được dùng để minh họa khả năng duy trì trạng thái đăng nhập:
+\begin{itemize}
+    \item \textbf{Thiết lập Cookie (Server gửi):} Sau khi người dùng đăng nhập thành công, server trả về response chứa header \texttt{Set-Cookie}, ví dụ:
+    \begin{verbatim}
+    Set-Cookie: session_token=session_for_alice; Path=/; HttpOnly
+    \end{verbatim}
+    Trình duyệt sẽ lưu cookie này.
+    \item \textbf{Gửi lại Cookie (Client gửi):} Với mỗi request tiếp theo, trình duyệt tự động đính kèm header:
+    \begin{verbatim}
+    Cookie: session_token=session_for_alice
+    \end{verbatim}
+    Server đọc cookie này để xác định người dùng đã đăng nhập hay chưa, quyết định có cho phép truy cập tài nguyên bảo vệ hay không.
+\end{itemize}
+
+Như vậy, Cookie đóng vai trò như "thẻ căn cước", giúp server nhận ra người dùng qua nhiều request khác nhau, tạo ra một phiên làm việc có trạng thái trên một giao thức vốn vô trạng thái.
 
 %============================================================================
 \section*{4. Giao thức WebSocket}
