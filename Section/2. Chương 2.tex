@@ -45,7 +45,49 @@ Mô hình lai kết hợp các ưu điểm của cả Client-Server và P2P. Nó
 %============================================================================
 \section*{2. Lập trình Socket và Luồng (Socket \& Threading)}
 \addcontentsline{toc}{section}{2. Lập trình Socket và Luồng (Socket \& Threading)}
+Để hiện thực các mô hình giao tiếp mạng đã nêu, dự án sử dụng hai công nghệ nền tảng: \textbf{Socket API} để tạo kênh truyền và \textbf{đa luồng (Multithreading)} để quản lý các kết nối đồng thời.
 
+Socket là một khái niệm trừu tượng của hệ điều hành, đại diện cho một \textit{điểm cuối} trong kênh giao tiếp hai chiều qua mạng. Lập trình viên có thể thao tác với Socket mà không cần quan tâm chi tiết phức tạp của tầng giao vận (Transport Layer) bên dưới. Trong Python, thư viện \texttt{socket} cung cấp giao diện cấp cao để làm việc với các cơ chế mạng này.
+
+Trong dự án, Socket API được sử dụng để thiết lập kết nối dựa trên giao thức TCP (Transmission Control Protocol), đảm bảo dữ liệu truyền đi đáng tin cậy và đúng thứ tự. Một số thao tác chính được sử dụng gồm:
+
+\subsection*{Phía Server (Lắng nghe)}
+\begin{itemize}
+    \item \texttt{socket.socket()}: Tạo một đối tượng socket mới.
+    \item \texttt{socket.bind((ip, port))}: Gán socket với địa chỉ IP và port cụ thể trên máy chủ.
+    \item \texttt{socket.listen()}: Đặt socket vào trạng thái lắng nghe, sẵn sàng chấp nhận các kết nối đến.
+    \item \texttt{socket.accept()}: Hàm khóa (blocking), tạm dừng chương trình cho đến khi có client kết nối. Trả về một socket mới đại diện cho kết nối và địa chỉ của client.
+\end{itemize}
+
+\subsection*{Phía Client (Kết nối)}
+\begin{itemize}
+    \item \texttt{socket.socket()}: Tạo một đối tượng socket mới.
+    \item \texttt{socket.connect((server\_ip, server\_port))}: Chủ động kết nối tới server.
+\end{itemize}
+
+\subsection*{Trao đổi dữ liệu (Cả hai phía)}
+\begin{itemize}
+    \item \texttt{socket.sendall(data)}: Gửi toàn bộ dữ liệu (dạng bytes) qua kết nối.
+    \item \texttt{socket.recv(buffer\_size)}: Hàm khóa (blocking), nhận dữ liệu từ phía bên kia.
+\end{itemize}
+
+Một vấn đề cơ bản với server đơn luồng là không thể phục vụ nhiều client cùng lúc. Ví dụ, khi server đang chờ client A kết nối, các client khác phải chờ; nếu server xử lý yêu cầu của A lâu, client B, C... sẽ bị trì hoãn, ảnh hưởng trải nghiệm người dùng.
+
+\subsection*{Đa luồng (Threading)}
+Để khắc phục, dự án sử dụng thư viện \texttt{threading} trong Python:
+
+\begin{itemize}
+    \item Mỗi kết nối mới được xử lý trong một \textbf{luồng riêng} thay vì luồng chính.
+    \item Luồng chính luôn sẵn sàng để tiếp nhận các kết nối mới.
+    \item Giúp server phục vụ nhiều client đồng thời mà không bị treo.
+    \item Tận dụng tối đa tài nguyên hệ thống, có thể xử lý hàng chục hoặc hàng trăm kết nối cùng lúc.
+\end{itemize}
+
+\textbf{Áp dụng trong dự án:} Cơ chế này được sử dụng trong cả:
+\begin{itemize}
+    \item Tracker Server: xử lý nhiều peer cùng lúc.
+    \item P2P Server bên trong mỗi Peer Client: chấp nhận kết nối từ nhiều peer khác.
+\end{itemize}
 %============================================================================
 \section*{3. Giao thức HTTP và Cookie}
 \addcontentsline{toc}{section}{3. Giao thức HTTP và Cookie}
