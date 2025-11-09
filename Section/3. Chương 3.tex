@@ -64,18 +64,27 @@ Các API chính của Tracker Server bao gồm:
     Chức năng: Xác thực danh tính người dùng dựa trên \texttt{username} và \texttt{password}. \\
     Input (JSON Body):
     \begin{verbatim}
-    {"username": "<tên>", "password": "<mật khẩu>"}
+    {
+        "username": "<tên>", 
+        "password": "<mật khẩu>"
+    }
     \end{verbatim}
     Output (JSON):
 
     \begin{itemize}
         \item Thành công:
         \begin{verbatim}
-        {"status": "success", "token": "token_<tên>"}
+        {
+        "status": "success", 
+        "token": "token_<tên>"
+        }
         \end{verbatim}
         \item Thất bại:
         \begin{verbatim}
-        {"status": "failed", "message": "Invalid credentials"}
+        {
+        "status": "failed", 
+        "message": "Invalid credentials"
+        }
         \end{verbatim}
     \end{itemize}
 
@@ -84,16 +93,20 @@ Các API chính của Tracker Server bao gồm:
     Chức năng: Cho phép một peer đăng ký hoặc cập nhật thông tin với Tracker, bao gồm các kênh tham gia. \\
     Input (JSON Body):
     \begin{verbatim}
-    {"username": "<tên>", 
+    {
+    "username": "<tên>", 
     "ip": "<địa chỉ IP>", 
     "port": <số port>, 
-    "channels": ["<tên kênh>"]}
+    "channels": ["<tên kênh>"]
+    }
     \end{verbatim}
     Output (JSON):
     \begin{verbatim}
-    {"status": "success", 
+    {
+    "status": "success", 
     "peer_id": <id>, 
-    "total_peers": <số lượng>}
+    "total_peers": <số lượng>
+    }
     \end{verbatim}
 
     \item \textbf{API /add-list} \\
@@ -101,11 +114,18 @@ Các API chính của Tracker Server bao gồm:
     Chức năng: Cho phép peer thông báo tham gia một kênh chat mới. \\
     Input (JSON Body):
     \begin{verbatim}
-    {"username": "<tên>", "channel": "<tên kênh>"}
+    {
+    "username": "<tên>", 
+    "channel": "<tên kênh>"
+    }
     \end{verbatim}
     Output (JSON):
     \begin{verbatim}
-    {"status": "success", "channel": "<tên kênh>", "members": ["<thành viên>"]}
+    {
+    "status": "success", 
+    "channel": "<tên kênh>", 
+    "members": ["<thành viên>"]
+    }
     \end{verbatim}
 
     \item \textbf{API /get-list} \\
@@ -119,7 +139,10 @@ Các API chính của Tracker Server bao gồm:
     \end{verbatim}
     Output (JSON):
     \begin{verbatim}
-    {"status": "success", "peers": [{"username": ..., "ip": ..., "port": ...}]}
+    {
+    "status": "success", 
+    "peers": [{"username": ..., "ip": ..., "port": ...}]
+    }
     \end{verbatim}
 \end{itemize}
 
