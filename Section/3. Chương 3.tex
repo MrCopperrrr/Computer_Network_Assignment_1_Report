@@ -195,3 +195,121 @@ Giao diện được thiết kế như một \textit{Single-Page Application} (S
 %============================================================================
 \section*{3. Thiết kế Giao thức}
 \addcontentsline{toc}{section}{3. Thiết kế Giao thức}
+Để các thành phần của hệ thống có thể giao tiếp và hiểu lẫn nhau, hai giao thức ứng dụng đơn giản đã được thiết kế dựa trên các kênh truyền TCP và WebSocket.
+
+\subsection*{Giao thức P2P giữa các Peer}
+
+Giao thức này được sử dụng để trao đổi dữ liệu trực tiếp giữa các tiến trình \texttt{peer\_client.py}. Toàn bộ dữ liệu được đóng gói dưới dạng JSON và gửi qua kết nối TCP. Mỗi thông điệp JSON đều chứa trường \texttt{type} để xác định mục đích của nó.
+
+Các loại thông điệp chính:
+
+\begin{itemize}
+    \item \textbf{Handshake} \\
+    Mục đích: Peer khởi tạo kết nối gửi thông điệp này để tự giới thiệu và bắt đầu quá trình "bắt tay". \\
+    Định dạng JSON:
+\begin{verbatim}
+{
+    "type": "handshake",
+    "username": "<tên của người gửi>"
+}
+\end{verbatim}
+
+    \item \textbf{Handshake Ack} \\
+    Mục đích: Peer nhận kết nối phản hồi lại handshake, xác nhận kết nối đã được chấp nhận. \\
+    Định dạng JSON:
+\begin{verbatim}
+{
+    "type": "handshake_ack",
+    "username": "<tên của người phản hồi>"
+}
+\end{verbatim}
+
+    \item \textbf{Chat} \\
+    Mục đích: Gửi tin nhắn riêng tư đến một peer cụ thể. \\
+    Định dạng JSON:
+\begin{verbatim}
+{
+    "type": "chat",
+    "from": "<tên người gửi>",
+    "channel": "direct",
+    "message": "<nội dung tin nhắn>",
+    "time": "<dấu thời gian ISO 8601>"
+}
+\end{verbatim}
+
+    \item \textbf{Broadcast} \\
+    Mục đích: Gửi tin nhắn đến một kênh chat (ví dụ: \texttt{general} hoặc \texttt{broadcast}). Peer gửi sẽ lặp qua tất cả các kết nối P2P hiện có. \\
+    Định dạng JSON:
+\begin{verbatim}
+{
+    "type": "broadcast",
+    "from": "<tên người gửi>",
+    "channel": "<tên kênh>",
+    "message": "<nội dung tin nhắn>",
+    "time": "<dấu thời gian ISO 8601>"
+}
+\end{verbatim}
+\end{itemize}
+
+\subsection*{Giao thức WebSocket giữa UI và Backend}
+
+Giao thức này được thiết kế để giao tiếp giữa giao diện web (\texttt{chat.html}) và tiến trình \\\texttt{peer\_client.py}. Nó hoạt động theo mô hình \textit{command-based}, trong đó UI gửi các lệnh dạng văn bản thô, và backend trả về các thông điệp JSON.
+
+\subsubsection*{Lệnh từ UI đến Backend (JavaScript → Python)}
+
+Các lệnh được gửi dưới dạng chuỗi, phân tách bằng khoảng trắng:
+
+\begin{itemize}
+    \item \texttt{login <username> <password>}: Xác thực với Tracker Server.
+    \item \texttt{join <channel\_name>}: Tham gia một kênh chat.
+    \item \texttt{list}: Lấy danh sách peer mới nhất từ Tracker.
+    \item \texttt{connect <username> <ip> <port>}: Kết nối thủ công đến một peer (dành cho gỡ lỗi/nâng cao).
+    \item \texttt{send <username> <message>}: Gửi tin nhắn riêng.
+    \item \texttt{sendchannel <channel\_name> <message>}: Gửi tin nhắn đến một kênh.
+\end{itemize}
+
+\subsubsection*{Thông điệp từ Backend đến UI (Python → JavaScript)}
+
+Backend gửi các thông điệp JSON để UI dễ phân tích và cập nhật giao diện:
+
+\begin{itemize}
+    \item \textbf{Kết quả đăng nhập}
+\begin{verbatim}
+{
+    "type": "login_result",
+    "result": {"status": "success", "token": ...}
+}
+\end{verbatim}
+
+    \item \textbf{Danh sách Peer}
+\begin{verbatim}
+{
+    "type": "peer_list",
+    "peers": [{"username": ..., "ip": ..., "port": ...}, ...]
+}
+\end{verbatim}
+
+    \item \textbf{Tin nhắn Chat hoặc Broadcast} \\
+    Chuyển tiếp nguyên vẹn thông điệp JSON nhận được từ peer khác:
+\begin{verbatim}
+{
+    "type": "chat",
+    "from": "bob",
+    "message": "Hello Alice!",
+    ...
+}
+\end{verbatim}
+
+    \item \textbf{Thông báo hệ thống / Lỗi}
+\begin{verbatim}
+{
+    "type": "system",
+    "message": "P2P link established with bob."
+}
+
+{
+    "type": "error",
+    "message": "Connection to charlie timed out."
+}
+\end{verbatim}
+\end{itemize}
