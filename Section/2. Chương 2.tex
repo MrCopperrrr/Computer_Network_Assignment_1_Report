@@ -167,11 +167,12 @@ WebSocket là cầu nối giữa "bộ não" P2P (\texttt{peer\_client.py}) và 
 \subsection*{So sánh HTTP và WebSocket}
 
 \begin{center}
-\begin{tabular}{|l|l|l|}
+\begin{tabularx}{\textwidth}{|l|X|X|}
+
 \hline
 \textbf{Tiêu chí} & \textbf{HTTP} & \textbf{WebSocket} \\
 \hline
-Mô hình & Yêu cầu-Phản hồi (Request-Response) & Song công toàn phần (Full-Duplex) \\
+Mô hình & Yêu cầu - Phản hồi (Request - Response) & Song công toàn phần (Full-Duplex) \\
 \hline
 Khởi tạo & Luôn do client khởi tạo & Cả client và server đều có thể gửi dữ liệu sau khi kết nối \\
 \hline
@@ -181,9 +182,11 @@ Kết nối & Không bền vững (có thể tạo kết nối mới cho mỗi r
 \hline
 Phù hợp cho & Tải tài nguyên, gọi API RESTful & Ứng dụng thời gian thực (chat, game online, bảng giá) \\
 \hline
-\end{tabular}
+\end{tabularx}
 \end{center}
 
 \subsection*{Luồng thiết lập kết nối WebSocket}
 Quá trình bắt đầu bằng một request HTTP từ client chứa header \texttt{Upgrade: websocket}. Nếu server hỗ trợ, nó trả về response HTTP với mã trạng thái \texttt{101 Switching Protocols}. Kể từ đó, kết nối TCP ban đầu được nâng cấp thành kết nối WebSocket và cả hai bên bắt đầu trao đổi dữ liệu theo giao thức mới. Thư viện \texttt{websockets} trong Python và đối tượng WebSocket trong JavaScript tự động xử lý quá trình này.
+
+
 
