@@ -4,6 +4,47 @@
 
 \section*{1. Kiến trúc tổng thể}
 \addcontentsline{toc}{section}{1. Kiến trúc tổng thể}
+Hệ thống được thiết kế theo một kiến trúc đa thành phần, phân tách rõ ràng các vai trò và trách nhiệm nhằm đảm bảo tính module, dễ bảo trì và khả năng mở rộng. Sơ đồ dưới đây minh họa mối quan hệ và luồng tương tác giữa các thành phần chính của hệ thống.
+
+% Chèn hình minh họa ở đây
+% \begin{figure}[H]
+%     \centering
+%     \includegraphics[width=0.8\textwidth]{images/architecture_diagram.png}
+%     \caption{Sơ đồ kiến trúc tổng thể của hệ thống}
+%     \label{fig:architecture}
+% \end{figure}
+
+Kiến trúc này gồm ba thành phần chính, mỗi thành phần có vai trò riêng nhưng phối hợp chặt chẽ với nhau:
+
+\subsection*{Tracker Server}
+Đây là thành phần trung tâm, hoạt động như một trung tâm điều phối trong giai đoạn Client-Server. Nó là một tiến trình độc lập, lắng nghe trên một port cố định và có các vai trò chính sau:
+\begin{itemize}
+    \item \textbf{Quản lý định danh và xác thực:} Tracker Server duy trì cơ sở dữ liệu người dùng đơn giản (\texttt{users\_credentials}) và cung cấp API \texttt{/login} để xác thực danh tính của các peer khi tham gia mạng.
+    \item \textbf{Quản lý trạng thái peer:} Tracker giữ danh sách động (\texttt{peers\_lock}) của tất cả peer đang trực tuyến, bao gồm username, địa chỉ IP và port P2P. Việc đăng ký và cập nhật thông tin được thực hiện qua API \texttt{/submit-info}.
+    \item \textbf{Quản lý kênh chat:} Tracker Server quản lý danh sách các kênh và thành viên thông qua API \texttt{/add-list}.
+    \item \textbf{Hỗ trợ khám phá peer (Peer Discovery):} API \texttt{/get-list} cho phép peer truy vấn và lấy danh sách các peer khác, làm tiền đề cho việc thiết lập kết nối P2P.
+\end{itemize}
+
+\subsection*{Peer Client}
+Đây là thành phần cốt lõi và phức tạp nhất, được thiết kế như một tiến trình daemon chạy trên máy của người dùng. Mỗi peer client thực hiện đồng thời ba vai trò:
+\begin{itemize}
+    \item \textbf{Vai trò Client (với Tracker):} Chủ động kết nối TCP đến Tracker Server để xác thực, đăng ký thông tin và tham gia kênh.
+    \item \textbf{Vai trò Server P2P:} Mở một socket TCP trên port do người dùng chỉ định (\texttt{peer\_port}) và lắng nghe các kết nối từ các peer khác.
+    \item \textbf{Vai trò Server giao diện (UI Server):} Chạy trên một luồng riêng, gồm:
+    \begin{itemize}
+        \item \textbf{HTTP Server:} Chạy trên port \texttt{http\_port = peer\_port + 10000}, phục vụ file \texttt{chat.html} và tài nguyên tĩnh (CSS, hình ảnh), đồng thời cung cấp endpoint \texttt{/confirm-login} để thiết lập cookie.
+        \item \textbf{WebSocket Server:} Chạy trên port \texttt{websocket\_port = peer\_port + 20000}, mở kênh giao tiếp hai chiều thời gian thực với giao diện web, nhận các lệnh từ người dùng và đẩy cập nhật tin nhắn lên trình duyệt.
+    \end{itemize}
+\end{itemize}
+
+\subsection*{Giao diện người dùng (Web UI)}
+Đây là lớp hiển thị của ứng dụng, đóng vai trò như "bộ điều khiển từ xa" cho peer client. Nhiệm vụ của nó gồm:
+\begin{itemize}
+    \item \textbf{Hiển thị trạng thái:} Hiển thị danh sách kênh, danh sách peer và nội dung chat dựa trên dữ liệu được đẩy xuống qua WebSocket.
+    \item \textbf{Thu thập tương tác người dùng:} Ghi nhận hành động gõ tin nhắn, nhấn gửi, chọn cuộc trò chuyện.
+    \item \textbf{Gửi lệnh:} Chuyển hóa các tương tác thành lệnh đơn giản (ví dụ: \texttt{send bob hello world}) gửi đến peer client để xử lý.
+    \item \textbf{Quản lý session phía client:} Sử dụng \texttt{localStorage} để lưu thông tin phiên, cho phép tự động kết nối lại khi tải lại trang, mang lại trải nghiệm liền mạch.
+\end{itemize}
 
 %============================================================================
 \section*{2. Thiết kế các Module chính}
