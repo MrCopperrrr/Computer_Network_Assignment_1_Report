@@ -188,5 +188,46 @@ Phù hợp cho & Tải tài nguyên, gọi API RESTful & Ứng dụng thời gia
 \subsection*{Luồng thiết lập kết nối WebSocket}
 Quá trình bắt đầu bằng một request HTTP từ client chứa header \texttt{Upgrade: websocket}. Nếu server hỗ trợ, nó trả về response HTTP với mã trạng thái \texttt{101 Switching Protocols}. Kể từ đó, kết nối TCP ban đầu được nâng cấp thành kết nối WebSocket và cả hai bên bắt đầu trao đổi dữ liệu theo giao thức mới. Thư viện \texttt{websockets} trong Python và đối tượng WebSocket trong JavaScript tự động xử lý quá trình này.
 
+%============================================================================
 
+\section*{5. Quản lý phiên và đồng bộ hóa tin nhắn}
+\addcontentsline{toc}{section}{5. Quản lý phiên và đồng bộ hóa tin nhắn}
+
+Một ứng dụng chat hiện đại không chỉ yêu cầu giao tiếp thời gian thực mà còn phải đảm bảo rằng mỗi người dùng được nhận dạng đúng và tin nhắn được đồng bộ chính xác giữa các peer và giao diện người dùng. Trong dự án, hai cơ chế chính được áp dụng để giải quyết vấn đề này: quản lý phiên (session management) và đồng bộ hóa tin nhắn.
+
+\subsection*{Quản lý phiên (Session Management)}
+Vì HTTP vốn vô trạng thái, việc xác định ai đang đăng nhập và có quyền truy cập các tài nguyên bảo vệ là rất quan trọng. Dự án sử dụng kết hợp Cookie và localStorage trên trình duyệt để quản lý phiên làm việc của người dùng:
+\begin{itemize}
+    \item \textbf{Cookie trên HTTP:} Sau khi người dùng đăng nhập thành công, server tạo một cookie chứa thông tin phiên, ví dụ \texttt{session\_token}, gửi về trình duyệt. Mỗi request tiếp theo từ trình duyệt sẽ kèm theo cookie này, giúp server nhận biết người dùng.
+    \item \textbf{LocalStorage trên trình duyệt:} Khi kết nối WebSocket được thiết lập, thông tin phiên cũng được lưu trong localStorage. Khi người dùng tải lại trang, client tự động gửi lại thông tin này để phục hồi kết nối, tránh phải đăng nhập lại thủ công.
+\end{itemize}
+
+Kết hợp hai cơ chế trên, ứng dụng có thể:
+\begin{itemize}
+    \item Nhận biết và xác thực người dùng qua nhiều request HTTP.
+    \item Duy trì kết nối thời gian thực ngay cả khi trang web được tải lại.
+\end{itemize}
+
+\subsection*{Đồng bộ hóa tin nhắn}
+Trong môi trường P2P, các peer trao đổi trực tiếp, vì vậy việc đồng bộ hóa tin nhắn là cần thiết để đảm bảo rằng:
+\begin{itemize}
+    \item Tin nhắn gửi đi được hiển thị đầy đủ trên cả người gửi và người nhận.
+    \item Các kênh chat nhóm (\#general, \#broadcast,...) luôn đồng bộ với tất cả các thành viên.
+\end{itemize}
+
+Cơ chế đồng bộ hóa trong dự án:
+\begin{itemize}
+    \item Mỗi peer lưu một danh sách tin nhắn cục bộ cho từng kênh hoặc chat riêng.
+    \item Khi nhận tin nhắn mới từ một peer khác, peer sẽ cập nhật danh sách tin nhắn cục bộ và đồng thời đẩy tin nhắn này lên giao diện trình duyệt qua WebSocket.
+    \item Trong trường hợp chat nhóm hoặc broadcast, peer gửi tin nhắn đến tất cả peer trong kênh, đảm bảo mọi người đều nhận được nội dung gần như cùng lúc.
+\end{itemize}
+
+Nhờ cơ chế quản lý phiên kết hợp với đồng bộ hóa tin nhắn, ứng dụng chat đạt được các tiêu chí:
+\begin{itemize}
+    \item Tin nhắn được gửi và nhận chính xác, đầy đủ.
+    \item Người dùng không phải đăng nhập lại sau khi reload trang.
+    \item Trải nghiệm thời gian thực gần như tức thì, hạn chế độ trễ và đảm bảo tính riêng tư.
+\end{itemize}
+
+Như vậy, dự án đã thiết lập được nền tảng lý thuyết vững chắc cho việc hiện thực hệ thống chat hybrid với khả năng quản lý phiên, đồng bộ hóa tin nhắn, và giao tiếp thời gian thực.
 
