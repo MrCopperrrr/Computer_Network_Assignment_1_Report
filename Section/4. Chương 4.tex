@@ -70,8 +70,8 @@ Chương này trình bày chi tiết các khía cạnh kỹ thuật trong quá t
 \end{itemize}
 
 %============================================================================
-\section*{2. Hiện thực các chức năng chính}
-\addcontentsline{toc}{section}{2. Hiện thực các chức năng chính}
+\section*{2. HTTP Server với Cookie Session}
+\addcontentsline{toc}{section}{2. HTTP Server với Cookie Session}
 
 Phần này trình bày chi tiết cách các chức năng trong đề bài đã được hiện thực, kèm các đoạn mã nguồn minh họa cho các giải pháp kỹ thuật đã áp dụng.  
 Máy chủ HTTP cơ bản được xây dựng hoàn toàn bằng \texttt{socket} và \texttt{threading}, không sử dụng framework, giúp hiểu rõ cơ chế hoạt động của HTTP ở mức nền tảng.  
@@ -154,3 +154,146 @@ def cookie_auth_guard(self, req):
 \end{lstlisting}
 
 Thông qua các thành phần trên, hệ thống đã hoàn chỉnh chức năng của một \textbf{HTTP Server có quản lý phiên người dùng bằng Cookie Session}.
+
+%============================================================================
+\section*{3. Ứng dụng Chat Hybrid (Client-Server kết hợp P2P)}
+\addcontentsline{toc}{section}{3. Ứng dụng Chat Hybrid (Client-Server kết hợp P2P)}
+
+Nhiệm vụ này yêu cầu xây dựng một hệ thống chat hoàn chỉnh, kết hợp cả hai mô hình \textbf{Client-Server} và \textbf{Peer-to-Peer (P2P)}.  
+Hệ thống được chia thành hai thành phần chính: \textbf{Tracker Server} (\texttt{start\_chatapp.py}) và \textbf{Peer Client} (\texttt{peer\_client.py}).
+
+%----------------------------------------------------------------------------
+\subsection*{a. Tracker Server – Trung tâm điều phối}
+
+Tracker Server đóng vai trò là “bộ não” trung tâm của mạng lưới. Thành phần này được xây dựng dựa trên framework \texttt{WeApRous} được cung cấp sẵn.  
+Nó sử dụng các biến toàn cục được bảo vệ bởi \texttt{threading.Lock} để đảm bảo an toàn khi nhiều luồng truy cập và ghi dữ liệu đồng thời.  
+Các chức năng chính được hiện thực thông qua các API endpoint.
+
+\textbf{Đoạn mã 4.4: Khai báo biến trạng thái và định nghĩa route trong \texttt{start\_chatapp.py}}
+
+\begin{lstlisting}[language=Python, caption={Tracker Server - quản lý trạng thái mạng lưới}]
+peers_list = []
+channels_list = {}
+users_credentials = { "admin": "password", "alice": "alice123", ... }
+
+peers_lock = threading.Lock()
+channels_lock = threading.Lock()
+
+app = WeApRous()
+
+@app.route('/submit-info', methods=['POST'])
+def submit_info(headers="guest", body="anonymous"):
+    try:
+        data = json.loads(body)
+        # ...
+        with peers_lock: 
+        # ...
+        return json.dumps(response)
+    except Exception as e:
+        # ...
+\end{lstlisting}
+Đoạn mã trên minh họa cách \texttt{WeApRous} được dùng để định nghĩa endpoint một cách trực quan.  
+Mỗi khi có yêu cầu \texttt{POST /submit-info}, hàm \texttt{submit\_info()} sẽ được gọi để xử lý.  
+Khóa \texttt{peers\_lock} đảm bảo rằng việc cập nhật danh sách \texttt{peers\_list} là an toàn, ngay cả khi nhiều peer đăng ký cùng lúc.
+
+%----------------------------------------------------------------------------
+\subsection*{b. Peer Client – Kiến trúc Đa Server}
+
+\texttt{PeerClient} là thành phần phức tạp nhất của hệ thống, được thiết kế như một tiến trình đa nhiệm có thể đảm nhiệm nhiều vai trò đồng thời.  
+Khi được khởi động, hàm \texttt{start()} sẽ tạo ra ba luồng chạy song song, tương ứng với ba server độc lập:
+
+\begin{itemize}
+    \item \textbf{Server P2P} (\texttt{\_run\_p2p\_server}): Lắng nghe và chấp nhận các kết nối TCP từ các peer khác.
+    \item \textbf{Server HTTP} (\texttt{\_run\_http\_server}): Phục vụ giao diện web \texttt{chat.html} và các tài nguyên tĩnh.
+    \item \textbf{Server WebSocket} (\texttt{\_run\_websocket\_server}): Duy trì kênh giao tiếp thời gian thực giữa backend và trình duyệt.
+\end{itemize}
+
+\textbf{Đoạn mã 4.5: Khởi chạy ba server song song trong \texttt{peer\_client.py}}
+
+\begin{lstlisting}[language=Python, caption={PeerClient - khởi chạy ba server đồng thời}]
+class PeerClient:
+    # ...
+    def start(self):
+        self.running = True
+        
+        p2p_thread = threading.Thread(target=self._run_p2p_server, daemon=True)
+        p2p_thread.start()
+
+        http_thread = threading.Thread(target=self._run_http_server, daemon=True)
+        http_thread.start()
+
+        ws_thread = threading.Thread(target=self._run_websocket_server, daemon=True)
+        ws_thread.start()
+\end{lstlisting}
+
+Cấu trúc đa luồng này đảm bảo rằng giao diện người dùng có thể hoạt động mượt mà, trong khi các kết nối mạng được xử lý song song mà không làm nghẽn tiến trình chính.
+
+%----------------------------------------------------------------------------
+\subsection*{c. Giai đoạn Client-Server: Khám phá Peer}
+
+Trong giai đoạn này, một \texttt{Peer Client} đóng vai trò là “Client”, gửi yêu cầu đến \texttt{Tracker Server} để đăng ký thông tin và khám phá các peer khác trong cùng kênh.
+
+Quy trình được thực hiện trong hàm \texttt{join\_channel()}, gồm ba bước chính:
+
+\begin{enumerate}
+    \item Gửi yêu cầu \texttt{POST /submit-info} đến Tracker để thông báo việc tham gia kênh.
+    \item Gửi yêu cầu \texttt{/get-list} để lấy danh sách các peer hiện đang trong cùng kênh.
+    \item Với mỗi peer nhận được, khởi tạo một luồng kết nối TCP riêng (P2P).
+\end{enumerate}
+
+\textbf{Đoạn mã 4.6: Logic tham gia kênh và khám phá peer trong \texttt{peer\_client.py}}
+
+\begin{lstlisting}[language=Python, caption={Tham gia kênh và khởi tạo kết nối P2P}]
+def join_channel(self, channel):
+    try:
+        # ...
+
+        print(f"[P2P Auto-Connect] Getting peers for channel '{channel}'...")
+        peers_in_channel = self.get_peer_list(channel=channel)
+        
+        for peer in peers_in_channel:
+            if peer.get("username") != self.username:
+                connect_thread = threading.Thread(
+                    target=self.connect_peer,
+                    args=(peer.get("username"), peer.get("ip"), peer.get("port"))),
+                    daemon=True
+                )
+                connect_thread.start()
+        return True
+    except Exception as e:
+        # ...
+\end{lstlisting}
+
+Việc sử dụng luồng riêng cho mỗi kết nối đảm bảo rằng quá trình khám phá và kết nối nhiều peer không gây treo giao diện hoặc nghẽn mạng.
+
+%----------------------------------------------------------------------------
+\subsection*{d. Giai đoạn Peer-to-Peer: Giao tiếp trực tiếp}
+
+Sau khi quá trình khám phá hoàn tất, các peer có thể giao tiếp trực tiếp với nhau mà không cần qua Tracker.  
+Hàm \texttt{connect\_peer()} (bên chủ động) và \texttt{\_handle\_peer\_connection()} (bên bị động) hiện thực quy trình “bắt tay” (handshake) và thiết lập kết nối TCP ổn định.  
+Mỗi kết nối P2P sau đó được gắn với một luồng riêng \texttt{\_listen\_to\_peer()} để lắng nghe tin nhắn đến.
+
+\textbf{Đoạn mã 4.7: Vòng lặp lắng nghe tin nhắn P2P trong \texttt{peer\_client.py}}
+
+\begin{lstlisting}[language=Python, caption={Lắng nghe tin nhắn từ peer khác}]
+def _listen_to_peer(self, conn, peer_username):
+    print(f"[P2P Listen] Started listening thread for '{peer_username}'.")
+    conn.settimeout(10.0)  
+    
+    while self.running:
+        try:
+            data = conn.recv(4096)
+            if not data:
+                break  
+
+            message = json.loads(data.decode('utf-8'))
+            self._process_peer_message(message)
+
+        except socket.timeout:
+            continue
+        except Exception as e:
+            print(f"[P2P Listen] Connection error with '{peer_username}': {e}")
+            break
+\end{lstlisting}
+
+Nhờ cơ chế này, hệ thống cho phép các peer gửi và nhận tin nhắn trong thời gian thực mà không cần máy chủ trung gian, đạt được mục tiêu \textbf{kết hợp mô hình Client-Server và P2P trong cùng một ứng dụng}.
