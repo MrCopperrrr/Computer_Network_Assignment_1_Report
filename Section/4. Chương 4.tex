@@ -72,3 +72,85 @@ Chương này trình bày chi tiết các khía cạnh kỹ thuật trong quá t
 %============================================================================
 \section*{2. Hiện thực các chức năng chính}
 \addcontentsline{toc}{section}{2. Hiện thực các chức năng chính}
+
+Phần này trình bày chi tiết cách các chức năng trong đề bài đã được hiện thực, kèm các đoạn mã nguồn minh họa cho các giải pháp kỹ thuật đã áp dụng.  
+Máy chủ HTTP cơ bản được xây dựng hoàn toàn bằng \texttt{socket} và \texttt{threading}, không sử dụng framework, giúp hiểu rõ cơ chế hoạt động của HTTP ở mức nền tảng.  
+Logic xử lý request được đóng gói trong lớp \texttt{HttpAdapter} (file \texttt{daemon/httpadapter.py}), trong khi việc khởi tạo server và quản lý luồng được triển khai trong \texttt{daemon/backend.py}.
+
+\subsection*{a. Khởi tạo Server và Xử lý Đa luồng}
+
+Nền tảng của máy chủ là khả năng xử lý nhiều kết nối đồng thời. Hàm \texttt{run\_backend} chịu trách nhiệm lắng nghe kết nối mới và tạo luồng riêng biệt cho mỗi client.  
+\textbf{Đoạn mã 4.1: Khởi tạo server và tạo luồng mới cho mỗi client trong \texttt{daemon/backend.py}}
+
+\begin{lstlisting}[language=Python, caption={Khởi tạo server và xử lý đa luồng}]
+def run_backend(ip, port, routes):
+    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    try:
+        server.bind((ip, port))
+        server.listen(50)
+        print("[Backend] Listening on port {}".format(port))
+
+        while True:
+            conn, addr = server.accept()
+            client_thread = threading.Thread(
+                target=handle_client,
+                args=(ip, port, conn, addr, routes)
+            )
+            client_thread.daemon = True
+            client_thread.start()
+
+    except socket.error as e:
+        print("Socket error: {}".format(e))
+\end{lstlisting}
+
+\subsection*{b. Xử lý Yêu cầu Đăng nhập (Task 1A)}
+
+Khi người dùng gửi yêu cầu POST đến \texttt{/login}, hàm \texttt{handle\_login} trong \texttt{HttpAdapter} sẽ được gọi để phân tích dữ liệu form, kiểm tra thông tin đăng nhập và thiết lập cookie nếu hợp lệ.  
+
+\textbf{Đoạn mã 4.2: Logic xử lý đăng nhập và thiết lập cookie trong \texttt{daemon/httpadapter.py}}
+
+\begin{lstlisting}[language=Python, caption={Xử lý đăng nhập và tạo cookie}]
+def handle_login(self, req, resp):
+    raw_body = req.body.decode("utf-8", "ignore")
+    creds = {}
+    for pair in raw_body.split("&"):
+        if "=" in pair:
+            k, v = pair.split("=", 1)
+            creds[k] = v
+
+    if creds.get("username") == "admin" and creds.get("password") == "password":
+        req.path = "/index.html"
+        raw_response = resp.build_response(req)
+        body = raw_response.split(b"\r\n\r\n", 1)[1]
+
+        headers = {
+            "Content-Type": "text/html; charset=utf-8",
+            "Set-Cookie": "auth=true; Path=/",
+        }
+        return ("200 OK", headers, body)
+    else:
+        e = RESP_TEMPLATES["login_failed"]
+        return (e["status"], {"Content-Type": e["content_type"]}, e["body"])
+\end{lstlisting}
+
+\subsection*{c. Kiểm soát Truy cập dựa trên Cookie (Task 1B)}
+
+Để bảo vệ các tài nguyên nhạy cảm, hàm \texttt{cookie\_auth\_guard} được triển khai để kiểm tra tính hợp lệ của cookie trong mỗi request.  
+Nếu không có hoặc cookie sai, người dùng sẽ bị chặn truy cập và nhận trang lỗi 401.
+
+\textbf{Đoạn mã 4.3: Logic kiểm tra cookie trong \texttt{daemon/httpadapter.py}}
+
+\begin{lstlisting}[language=Python, caption={Kiểm soát truy cập bằng cookie}]
+def cookie_auth_guard(self, req):
+    if req.path in ("/", "/index.html"):
+        if req.cookies.get("auth") != "true":
+            e = RESP_TEMPLATES["unauthorized"]
+            return (e["status"], {"Content-Type": e["content_type"]}, e["body"])
+
+    if req.path == "/":
+        req.path = "/index.html"
+
+    return None
+\end{lstlisting}
+
+Thông qua các thành phần trên, hệ thống đã hoàn chỉnh chức năng của một \textbf{HTTP Server có quản lý phiên người dùng bằng Cookie Session}.
