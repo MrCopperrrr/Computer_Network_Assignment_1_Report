@@ -4,6 +4,70 @@
 
 \section*{1. Môi trường và Công cụ}
 \addcontentsline{toc}{section}{1. Môi trường và Công cụ}
+Chương này trình bày chi tiết các khía cạnh kỹ thuật trong quá trình xây dựng hệ thống, bao gồm môi trường phát triển, công cụ sử dụng, cũng như mã nguồn then chốt hiện thực hai chức năng cốt lõi: \textbf{HTTP Server với Cookie Session} và \textbf{Ứng dụng Chat Hybrid (P2P + WebSocket)}.
+
+\section*{Môi trường và Công cụ Phát triển}
+
+Để đảm bảo hệ thống vừa đáp ứng đúng yêu cầu kỹ thuật, vừa có tính ổn định và dễ mở rộng, nhóm đã lựa chọn bộ công cụ và thư viện phổ biến, mạnh mẽ nhưng vẫn giữ mức độ “tự hiện thực” cao ở tầng mạng (network layer).
+
+\subsection*{Ngôn ngữ lập trình}
+
+\begin{itemize}
+    \item \textbf{Python 3.x}:  
+    Được chọn làm ngôn ngữ chính cho phần \textbf{backend} bao gồm \texttt{Proxy}, \texttt{Backend}, \texttt{Tracker Server} và \texttt{Peer Client}.  
+    Python cung cấp cú pháp trong sáng, thư viện chuẩn phong phú và khả năng xử lý mạng mạnh mẽ, giúp nhóm dễ dàng xây dựng từ tầng socket thấp mà vẫn đảm bảo hiệu năng và khả năng mở rộng.
+    
+    \item \textbf{HTML5, CSS3, JavaScript (ES6)}:  
+    Dùng để xây dựng toàn bộ \textbf{frontend} — giao diện web của hệ thống.  
+    Kết hợp HTML và CSS để tạo giao diện hiện đại, trong khi JavaScript (với WebSocket và API Fetch) đảm nhận phần logic tương tác thời gian thực.
+\end{itemize}
+
+\subsection*{Các thư viện Python chính sử dụng}
+
+\begin{itemize}
+    \item \textbf{socket}:  
+    Thư viện nền tảng của Python, được sử dụng để xây dựng các kết nối mạng TCP cấp thấp. Đây là công cụ cốt lõi để hiện thực \texttt{HTTP Server}, \texttt{Proxy}, \texttt{Tracker} và các kết nối \texttt{P2P} giữa các peer.
+    
+    \item \textbf{threading}:  
+    Được sử dụng để triển khai kiến trúc \textit{đa luồng} (multithreading). Mỗi server (Backend, Tracker, P2P) hoạt động trong luồng riêng, đảm bảo khả năng phục vụ đồng thời nhiều kết nối mà không làm nghẽn (blocking) luồng chính.
+    
+    \item \textbf{argparse}:  
+    Cung cấp giao diện dòng lệnh (CLI) thân thiện, cho phép cấu hình linh hoạt các tham số như địa chỉ IP, port, hoặc đường dẫn file cấu hình khi khởi chạy server.
+    
+    \item \textbf{http.server} và \textbf{socketserver}:  
+    Hai thư viện tiêu chuẩn được kết hợp để xây dựng một \textit{HTTP Server tuỳ chỉnh} bên trong \texttt{peer\_client.py}.  
+    \texttt{socketserver} cung cấp khung xử lý socket đa luồng, trong khi \texttt{http.server} định nghĩa các lớp cơ sở giúp dễ dàng xử lý request và tạo response HTTP.
+    
+    \item \textbf{websockets}:  
+    Thư viện hiện thực giao thức WebSocket trong Python, cho phép xây dựng kênh giao tiếp hai chiều (full-duplex) giữa backend và trình duyệt. Đây là nền tảng cho phần ứng dụng chat thời gian thực.
+    
+    \item \textbf{json}:  
+    Dùng để \textit{serialize} và \textit{deserialize} dữ liệu giữa các module. JSON là định dạng truyền thông tin chính trong API Tracker và trong giao thức P2P.
+    
+    \item \textbf{functools.partial}:  
+    Được sử dụng để “gắn” tham chiếu đối tượng \texttt{PeerClient} vào lớp \texttt{CustomHandler} trong HTTP Server một cách an toàn, giúp lớp xử lý request có thể truy cập và thao tác trực tiếp trên trạng thái nội bộ của client hiện tại.
+\end{itemize}
+
+\subsection*{Công cụ phát triển phía Client (Trình duyệt)}
+
+\begin{itemize}
+    \item \textbf{WebSocket API}:  
+    Được hỗ trợ sẵn trong các trình duyệt hiện đại, cho phép JavaScript khởi tạo và quản lý kết nối WebSocket đến backend. Đây là cầu nối chính để gửi và nhận dữ liệu chat thời gian thực.
+
+    \item \textbf{Fetch API}:  
+    Được sử dụng để gửi các yêu cầu HTTP không đồng bộ (asynchronous requests), ví dụ như trong quá trình xác thực \texttt{/confirm-login} hoặc khởi tạo session cookie.
+
+    \item \textbf{localStorage}:  
+    Cơ chế lưu trữ phía client của trình duyệt. Dự án tận dụng localStorage để duy trì \textbf{phiên làm việc} (session) của người dùng, cho phép họ tự động kết nối lại sau khi tải lại trang hoặc đóng mở tab.
+
+    \item \textbf{Developer Tools (F12)}:  
+    Công cụ gỡ lỗi tích hợp trong trình duyệt — đặc biệt là:
+    \begin{itemize}
+        \item Tab \textbf{Console}: Quan sát log JavaScript và lỗi runtime.
+        \item Tab \textbf{Network}: Theo dõi các request HTTP và luồng WebSocket.
+        \item Tab \textbf{Application}: Kiểm tra cookie, sessionStorage và localStorage.
+    \end{itemize}
+\end{itemize}
 
 %============================================================================
 \section*{2. Hiện thực các chức năng chính}
