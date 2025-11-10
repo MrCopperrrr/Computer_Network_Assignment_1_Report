@@ -297,3 +297,97 @@ def _listen_to_peer(self, conn, peer_username):
 \end{lstlisting}
 
 Nhờ cơ chế này, hệ thống cho phép các peer gửi và nhận tin nhắn trong thời gian thực mà không cần máy chủ trung gian, đạt được mục tiêu \textbf{kết hợp mô hình Client-Server và P2P trong cùng một ứng dụng}.
+
+%============================================================================
+\section*{4. ``Put It All Together'' – Tích hợp Hệ thống Hoàn chỉnh}
+\addcontentsline{toc}{section}{4. ``Put It All Together'' – Tích hợp Hệ thống Hoàn chỉnh}
+Nhiệm vụ này yêu cầu kết hợp các kỹ năng đã học từ việc xây dựng \textbf{HTTP Server (Task 1)} và các thành phần của \textbf{Ứng dụng Chat Hybrid (Task 2)} để tạo ra một hệ thống thống nhất, liền mạch và có trải nghiệm người dùng hoàn chỉnh. Hệ thống được hiện thực thông qua kiến trúc ba lớp rõ ràng:
+\begin{itemize}
+    \item \textbf{Backend Logic (Python)} – xử lý nghiệp vụ mạng và giao tiếp P2P.
+    \item \textbf{Kênh Giao tiếp Real-time (WebSocket)} – cầu nối hai chiều giữa backend và giao diện.
+    \item \textbf{Giao diện Người dùng (JavaScript)} – cung cấp trải nghiệm trực quan và tương tác.
+\end{itemize}
+
+\subsection*{a. Tích hợp Giao diện Web và Backend Logic}
+
+Thay vì hoạt động như một ứng dụng dòng lệnh (CLI), tệp \texttt{peer\_client.py} được nâng cấp để đóng vai trò \textbf{server backend} phục vụ cho giao diện web. Mục tiêu của việc tích hợp này là:
+\begin{itemize}
+    \item Cung cấp trải nghiệm người dùng trực quan, hiện đại.
+    \item Giải quyết giới hạn bảo mật của trình duyệt (trình duyệt không thể trực tiếp mở socket TCP).
+\end{itemize}
+
+\subsubsection*{HTTP Server tùy chỉnh}
+Thành phần HTTP Server trong \texttt{peer\_client.py} không chỉ đơn thuần phục vụ file HTML tĩnh, mà còn chủ động \textit{``tiêm dữ liệu cấu hình''} (\textit{injection}) vào file \texttt{chat.html} trước khi gửi đến trình duyệt. Dữ liệu này giúp giao diện web nhận biết được thông tin khởi tạo (ví dụ: \texttt{username}, \texttt{peerPort}) để bắt đầu giao tiếp với backend.
+
+\begin{lstlisting}[language=Python, caption={Logic "tiêm" dữ liệu vào HTML trong \texttt{peer\_client.py}}, label={lst:inject}]
+def do_GET(self):
+    if self.path == '/www/chat.html' or self.path == '/':
+        # ...
+        injected_data = {
+            "username": self.server.peer_client_ref.username,
+            "peerPort": self.server.peer_client_ref.peer_port
+        }
+        content = content.replace(
+            '<script id="config-placeholder"></script>',
+            f'<script>window.PEER_CONFIG = {json.dumps(injected_data)};</script>'
+        )
+\end{lstlisting}
+
+\subsubsection*{WebSocket – Cầu nối hai chiều giữa giao diện và backend}
+
+WebSocket đóng vai trò là \textbf{cầu nối thời gian thực} giữa trình duyệt và backend Python. Khi người dùng gửi tin nhắn, JavaScript không truyền trực tiếp qua mạng, mà gửi một lệnh dạng chuỗi (\texttt{send}) đến backend thông qua WebSocket. Backend sau đó xử lý logic P2P, gửi tin nhắn đến các peer khác, rồi đẩy phản hồi trở lại trình duyệt.
+
+\begin{lstlisting}[caption={Gửi lệnh từ giao diện đến backend qua WebSocket}, label={lst:send-js}]
+function sendMessage() {
+    const text = messageInput.value.trim();
+    const command = `send ${currentChatTarget} ${text}`;
+    sendCommand(command); 
+}
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python, caption={Xử lý lệnh gửi tin nhắn trong backend Python}, label={lst:send-py}]
+def _handle_ui_command(self, cmd):
+    parts = cmd.strip().split()
+    command = parts[0].lower()
+    if command == "send":
+        username = parts[1]
+        message = " ".join(parts[2:])
+        self.send_peer(username, message)  
+\end{lstlisting}
+
+\subsection*{b. Kết hợp Quản lý Session (Cookie và localStorage)}
+
+Để đáp ứng yêu cầu ``HTTP Cookies work'' trong Task 1 và đồng thời đảm bảo trải nghiệm người dùng liền mạch, hệ thống kết hợp cả hai cơ chế lưu trữ phía client: \textbf{Cookie} và \textbf{localStorage}.
+
+\subsubsection*{Cookie}
+Sau khi người dùng đăng nhập thành công, JavaScript gửi một yêu cầu \texttt{fetch('/confirm-login')}. Phía backend sẽ phản hồi với header \texttt{Set-Cookie}, minh chứng khả năng xử lý cookie của server HTTP. Mặc dù cookie này không tham gia vào logic chat thực tế, sự xuất hiện của nó trong trình duyệt (tab \texttt{Application} $\rightarrow$ Cookies) xác nhận rằng chức năng đã được hiện thực đúng chuẩn.
+
+\subsubsection*{localStorage – Quản lý phiên thực tế}
+Cơ chế lưu trữ chính của ứng dụng là \texttt{localStorage}. Nó giúp duy trì trạng thái đăng nhập và tự động kết nối lại khi tải lại trang.
+
+\begin{itemize}
+    \item \textbf{Lưu Session}: Sau khi kết nối WebSocket thành công, JavaScript lưu thông tin phiên (\texttt{username}, \texttt{peerPort}, \texttt{websocketPort}) vào \texttt{localStorage}.
+    \item \textbf{Tự động kết nối lại}: Khi tải lại trang, script sẽ kiểm tra \texttt{localStorage}. Nếu tồn tại session hợp lệ, hệ thống bỏ qua bước đăng nhập và kết nối lại tự động.
+    \item \textbf{Xóa Session}: Khi backend dừng hoạt động, session sẽ bị xóa để đảm bảo tính bảo mật.
+\end{itemize}
+
+\begin{lstlisting}[caption={Kiểm tra và tự động kết nối lại bằng localStorage trong \texttt{chat.html}}, label={lst:session}]
+document.addEventListener('DOMContentLoaded', () => {
+    const savedSession = localStorage.getItem('chatSession');
+    if (savedSession) {
+        const session = JSON.parse(savedSession);
+        if (window.PEER_CONFIG && session.username === window.PEER_CONFIG.username) {
+            console.log('Found matching session. Auto-connecting...');
+            currentUser.username = session.username;
+            connectWebSocket(session.websocketPort);
+        }
+    }
+});
+\end{lstlisting}
+
+Tổng thể, sự kết hợp giữa \textbf{Python Backend}, \textbf{WebSocket}, \textbf{Cookie} và \textbf{localStorage} giúp ứng dụng đạt được cả hai mục tiêu:
+\begin{enumerate}
+    \item Đáp ứng các yêu cầu kỹ thuật của từng nhiệm vụ riêng lẻ.
+    \item Cung cấp một hệ thống chat phân tán hoạt động ổn định, tiện dụng và có tính thực tiễn cao.
+\end{enumerate}
+
