@@ -3,11 +3,11 @@
 Chương này trình bày các khái niệm và công nghệ nền tảng được sử dụng làm cơ sở để thiết kế và hiện thực hệ thống ứng dụng chat.
 %============================================================================
 
-\section*{1. Mô hình giao tiếp mạng}
-\addcontentsline{toc}{section}{1. Mô hình giao tiếp mạng}
+\section*{2.1. Mô hình giao tiếp mạng}
+\addcontentsline{toc}{section}{2.1. Mô hình giao tiếp mạng}
 Trong kiến trúc ứng dụng mạng, có hai mô hình giao tiếp chính là \textbf{Client-Server} và \textbf{Peer-to-Peer (P2P)}. Hệ thống được xây dựng trong đề tài này là một ứng dụng lai (hybrid) kết hợp sức mạnh của cả hai mô hình.
 
-\subsection*{Mô hình Client-Server}
+\subsection*{2.1.1. Mô hình Client-Server}
 Mô hình Client-Server là kiến trúc phổ biến nhất trong các ứng dụng mạng, được đặc trưng bởi sự phân chia vai trò rõ rệt giữa các thành phần tham gia:
 
 \begin{itemize}
@@ -22,7 +22,7 @@ Mô hình Client-Server là kiến trúc phổ biến nhất trong các ứng d�
     \item \textbf{Peer Client} đóng vai trò là Client. Mỗi khi khởi động, nó chủ động kết nối đến Tracker Server để đăng ký thông tin và lấy danh sách các peer khác đang hoạt động.
 \end{itemize}
 
-\subsection*{Mô hình Peer-to-Peer (P2P)}
+\subsection*{2.1.2. Mô hình Peer-to-Peer (P2P)}
 Trái ngược với mô hình Client-Server, mô hình P2P không có một máy chủ trung tâm cố định. Thay vào đó, các máy tính trong mạng (peer) có vai trò tương đương nhau. Mỗi peer vừa có thể là client (khởi tạo kết nối) vừa có thể là server (chấp nhận kết nối).
 
 \textbf{Áp dụng trong dự án:} Giai đoạn giao tiếp chính của ứng dụng chat dựa trên mô hình P2P. Cụ thể, sau khi nhận thông tin địa chỉ từ Tracker Server, các Peer Client sẽ:
@@ -33,7 +33,7 @@ Trái ngược với mô hình Client-Server, mô hình P2P không có một má
     \item Sau khi kết nối được thiết lập, trao đổi tin nhắn trực tiếp mà không cần sự can thiệp của Tracker Server.
 \end{itemize}
 
-\subsection*{Mô hình lai (Hybrid)}
+\subsection*{2.1.3. Mô hình lai (Hybrid)}
 Mô hình lai kết hợp các ưu điểm của cả Client-Server và P2P. Nó sử dụng máy chủ trung tâm cho các tác vụ đòi hỏi sự tin cậy và quản lý tập trung, đồng thời tận dụng khả năng kết nối trực tiếp của P2P cho các tác vụ cần hiệu suất cao và khả năng mở rộng.
 
 \textbf{Áp dụng trong dự án:} Ứng dụng chat là hệ thống hybrid điển hình:
@@ -43,15 +43,15 @@ Mô hình lai kết hợp các ưu điểm của cả Client-Server và P2P. Nó
     \item \textbf{Giai đoạn giao tiếp (communication):} Sử dụng mô hình P2P. Trao đổi tin nhắn trực tiếp giúp giảm độ trễ, tăng tính riêng tư và giảm tải cho Tracker Server, nâng cao khả năng mở rộng.
 \end{itemize}
 %============================================================================
-\section*{2. Lập trình Socket và Luồng (Socket \& Threading)}
-\addcontentsline{toc}{section}{2. Lập trình Socket và Luồng (Socket \& Threading)}
+\section*{2.2. Lập trình Socket và Luồng (Socket \& Threading)}
+\addcontentsline{toc}{section}{2.2. Lập trình Socket và Luồng (Socket \& Threading)}
 Để hiện thực các mô hình giao tiếp mạng đã nêu, dự án sử dụng hai công nghệ nền tảng: \textbf{Socket API} để tạo kênh truyền và \textbf{đa luồng (Multithreading)} để quản lý các kết nối đồng thời.
 
 Socket là một khái niệm trừu tượng của hệ điều hành, đại diện cho một \textit{điểm cuối} trong kênh giao tiếp hai chiều qua mạng. Lập trình viên có thể thao tác với Socket mà không cần quan tâm chi tiết phức tạp của tầng giao vận (Transport Layer) bên dưới. Trong Python, thư viện \texttt{socket} cung cấp giao diện cấp cao để làm việc với các cơ chế mạng này.
 
 Trong dự án, Socket API được sử dụng để thiết lập kết nối dựa trên giao thức TCP (Transmission Control Protocol), đảm bảo dữ liệu truyền đi đáng tin cậy và đúng thứ tự. Một số thao tác chính được sử dụng gồm:
 
-\subsection*{Phía Server (Lắng nghe)}
+\subsection*{2.2.1. Phía Server (Lắng nghe)}
 \begin{itemize}
     \item \texttt{socket.socket()}: Tạo một đối tượng socket mới.
     \item \texttt{socket.bind((ip, port))}: Gán socket với địa chỉ IP và port cụ thể trên máy chủ.
@@ -59,13 +59,13 @@ Trong dự án, Socket API được sử dụng để thiết lập kết nối 
     \item \texttt{socket.accept()}: Hàm khóa (blocking), tạm dừng chương trình cho đến khi có client kết nối. Trả về một socket mới đại diện cho kết nối và địa chỉ của client.
 \end{itemize}
 
-\subsection*{Phía Client (Kết nối)}
+\subsection*{2.2.2. Phía Client (Kết nối)}
 \begin{itemize}
     \item \texttt{socket.socket()}: Tạo một đối tượng socket mới.
     \item \texttt{socket.connect((server\_ip, server\_port))}: Chủ động kết nối tới server.
 \end{itemize}
 
-\subsection*{Trao đổi dữ liệu (Cả hai phía)}
+\subsection*{2.2.3. Trao đổi dữ liệu (Cả hai phía)}
 \begin{itemize}
     \item \texttt{socket.sendall(data)}: Gửi toàn bộ dữ liệu (dạng bytes) qua kết nối.
     \item \texttt{socket.recv(buffer\_size)}: Hàm khóa (blocking), nhận dữ liệu từ phía bên kia.
@@ -73,7 +73,7 @@ Trong dự án, Socket API được sử dụng để thiết lập kết nối 
 
 Một vấn đề cơ bản với server đơn luồng là không thể phục vụ nhiều client cùng lúc. Ví dụ, khi server đang chờ client A kết nối, các client khác phải chờ; nếu server xử lý yêu cầu của A lâu, client B, C... sẽ bị trì hoãn, ảnh hưởng trải nghiệm người dùng.
 
-\subsection*{Đa luồng (Threading)}
+\subsection*{2.2.4. Đa luồng (Threading)}
 Để khắc phục, dự án sử dụng thư viện \texttt{threading} trong Python:
 
 \begin{itemize}
@@ -89,13 +89,13 @@ Một vấn đề cơ bản với server đơn luồng là không thể phục v
     \item P2P Server bên trong mỗi Peer Client: chấp nhận kết nối từ nhiều peer khác.
 \end{itemize}
 %============================================================================
-\section*{3. Giao thức HTTP và Cookie}
-\addcontentsline{toc}{section}{3. Giao thức HTTP và Cookie}
+\section*{2.3. Giao thức HTTP và Cookie}
+\addcontentsline{toc}{section}{2.3. Giao thức HTTP và Cookie}
 HTTP (HyperText Transfer Protocol) là giao thức nền tảng của World Wide Web, hoạt động dựa trên mô hình Client-Server. Trong dự án, giao thức này được sử dụng cho việc giao tiếp giữa Peer Client và Tracker Server. Thay vì sử dụng các thư viện HTTP cấp cao, dự án hiện thực việc tạo và phân tích các thông điệp HTTP một cách thủ công qua socket để hiểu rõ bản chất của giao thức.
 
 Một phiên giao tiếp HTTP gồm một \textbf{request} từ client và một \textbf{response} từ server. Cả hai đều là các đoạn văn bản thô (plain text) tuân thủ định dạng nghiêm ngặt.
 
-\subsection*{HTTP Request}
+\subsection*{2.3.1. HTTP Request}
 Một request từ client gửi lên server gồm ba phần chính:
 \begin{itemize}
     \item \textbf{Start Line (Dòng bắt đầu):} Chứa phương thức (GET, POST), đường dẫn (Path) và phiên bản HTTP.
@@ -114,7 +114,7 @@ Content-Length: 68
 {"username": "alice", "ip": "192.168.1.6", "port": 9101}
 \end{verbatim}
 
-\subsection*{HTTP Response}
+\subsection*{2.3.2. HTTP Response}
 Một response từ server trả về cũng có cấu trúc tương tự:
 \begin{itemize}
     \item \textbf{Status Line (Dòng trạng thái):} Phiên bản HTTP, mã trạng thái (200 OK, 404 Not Found, ...), và thông điệp trạng thái.
@@ -122,7 +122,7 @@ Một response từ server trả về cũng có cấu trúc tương tự:
     \item \textbf{Body:} Chứa nội dung thực sự của tài nguyên, ví dụ code HTML hoặc dữ liệu JSON.
 \end{itemize}
 
-\subsection*{Cookie}
+\subsection*{2.3.3. Cookie}
 Một đặc tính cơ bản của HTTP là nó \textbf{vô trạng thái}, tức server không lưu thông tin về các request trước đó. Mỗi request được xử lý độc lập. Điều này gây khó khăn khi xây dựng các ứng dụng yêu cầu duy trì phiên đăng nhập.
 
 Để khắc phục, cơ chế \textbf{Cookie} được sử dụng. Cookie là mẩu thông tin nhỏ mà server gửi đến trình duyệt và yêu cầu lưu lại. Với mỗi request tiếp theo, trình duyệt sẽ tự động gửi lại cookie đến server.
@@ -144,8 +144,8 @@ Một đặc tính cơ bản của HTTP là nó \textbf{vô trạng thái}, tứ
 Như vậy, Cookie đóng vai trò như "thẻ căn cước", giúp server nhận ra người dùng qua nhiều request khác nhau, tạo ra một phiên làm việc có trạng thái trên một giao thức vốn vô trạng thái.
 
 %============================================================================
-\section*{4. Giao thức WebSocket}
-\addcontentsline{toc}{section}{4. Giao thức WebSocket}
+\section*{2.4. Giao thức WebSocket}
+\addcontentsline{toc}{section}{2.4. Giao thức WebSocket}
 Trong khi HTTP là giao thức lý tưởng cho mô hình yêu cầu-phản hồi (request-response) truyền thống của web, nó bộc lộ hạn chế đối với các ứng dụng đòi hỏi tính tương tác cao và thời gian thực như ứng dụng chat. Để khắc phục, dự án đã tích hợp giao thức WebSocket làm kênh giao tiếp chính giữa backend logic (\texttt{peer\_client.py}) và giao diện người dùng trên trình duyệt (\texttt{chat.html}).
 
 Mô hình HTTP hoạt động theo dạng \textit{half-duplex}, do client khởi tạo. Client gửi request, server trả về response, rồi kết nối có thể bị đóng. Trong ứng dụng chat, điều này dẫn đến hai vấn đề chính:
@@ -161,10 +161,10 @@ WebSocket giải quyết vấn đề trên bằng cách tạo kênh giao tiếp 
     \item \textbf{Hiệu quả:} Giảm overhead so với HTTP, sau một lần handshake ban đầu, các frame dữ liệu rất nhỏ gọn.
 \end{itemize}
 
-\subsection*{Áp dụng trong dự án}
+\subsection*{2.4.1. Áp dụng trong dự án}
 WebSocket là cầu nối giữa "bộ não" P2P (\texttt{peer\_client.py}) và "giao diện điều khiển" (\texttt{chat.html}). Khi một peer nhận tin nhắn P2P từ peer khác, nó có thể ngay lập tức đẩy tin nhắn lên giao diện trình duyệt thông qua kết nối WebSocket, giúp người dùng thấy tin nhắn gần như tức thời.
 
-\subsection*{So sánh HTTP và WebSocket}
+\subsection*{2.4.2. So sánh HTTP và WebSocket}
 
 \begin{center}
 \begin{tabularx}{\textwidth}{|l|X|X|}
@@ -185,17 +185,17 @@ Phù hợp cho & Tải tài nguyên, gọi API RESTful & Ứng dụng thời gia
 \end{tabularx}
 \end{center}
 
-\subsection*{Luồng thiết lập kết nối WebSocket}
+\subsection*{2.4.3. Luồng thiết lập kết nối WebSocket}
 Quá trình bắt đầu bằng một request HTTP từ client chứa header \texttt{Upgrade: websocket}. Nếu server hỗ trợ, nó trả về response HTTP với mã trạng thái \texttt{101 Switching Protocols}. Kể từ đó, kết nối TCP ban đầu được nâng cấp thành kết nối WebSocket và cả hai bên bắt đầu trao đổi dữ liệu theo giao thức mới. Thư viện \texttt{websockets} trong Python và đối tượng WebSocket trong JavaScript tự động xử lý quá trình này.
 
 %============================================================================
 
-\section*{5. Quản lý phiên và đồng bộ hóa tin nhắn}
-\addcontentsline{toc}{section}{5. Quản lý phiên và đồng bộ hóa tin nhắn}
+\section*{2.5. Quản lý phiên và đồng bộ hóa tin nhắn}
+\addcontentsline{toc}{section}{2.5. Quản lý phiên và đồng bộ hóa tin nhắn}
 
 Một ứng dụng chat hiện đại không chỉ yêu cầu giao tiếp thời gian thực mà còn phải đảm bảo rằng mỗi người dùng được nhận dạng đúng và tin nhắn được đồng bộ chính xác giữa các peer và giao diện người dùng. Trong dự án, hai cơ chế chính được áp dụng để giải quyết vấn đề này: quản lý phiên (session management) và đồng bộ hóa tin nhắn.
 
-\subsection*{Quản lý phiên (Session Management)}
+\subsection*{2.5.1. Quản lý phiên (Session Management)}
 Vì HTTP vốn vô trạng thái, việc xác định ai đang đăng nhập và có quyền truy cập các tài nguyên bảo vệ là rất quan trọng. Dự án sử dụng kết hợp Cookie và localStorage trên trình duyệt để quản lý phiên làm việc của người dùng:
 \begin{itemize}
     \item \textbf{Cookie trên HTTP:} Sau khi người dùng đăng nhập thành công, server tạo một cookie chứa thông tin phiên, ví dụ \texttt{session\_token}, gửi về trình duyệt. Mỗi request tiếp theo từ trình duyệt sẽ kèm theo cookie này, giúp server nhận biết người dùng.
@@ -208,7 +208,7 @@ Kết hợp hai cơ chế trên, ứng dụng có thể:
     \item Duy trì kết nối thời gian thực ngay cả khi trang web được tải lại.
 \end{itemize}
 
-\subsection*{Đồng bộ hóa tin nhắn}
+\subsection*{2.5.2. Đồng bộ hóa tin nhắn}
 Trong môi trường P2P, các peer trao đổi trực tiếp, vì vậy việc đồng bộ hóa tin nhắn là cần thiết để đảm bảo rằng:
 \begin{itemize}
     \item Tin nhắn gửi đi được hiển thị đầy đủ trên cả người gửi và người nhận.
