@@ -47,3 +47,33 @@ Mặc dù hệ thống đã hoạt động ổn định, một số hạn chế 
 \end{itemize}
 
 %============================================================================
+\section*{6.3. Hướng phát triển}
+\addcontentsline{toc}{section}{6.3. Hướng phát triển}
+
+Dựa trên những hạn chế trên, nhóm đề xuất một số hướng mở rộng và cải tiến cho hệ thống trong tương lai:
+
+\begin{itemize}
+    \item \textbf{Tăng cường bảo mật:}  
+    \begin{itemize}
+        \item \textit{Mã hóa đầu cuối (End-to-End Encryption):} Áp dụng các thuật toán như RSA hoặc AES để mã hóa nội dung tin nhắn ngay tại phía người gửi, đảm bảo chỉ người nhận có thể giải mã.  
+        \item \textit{Băm mật khẩu (Password Hashing):} Sử dụng các thuật toán như bcrypt hoặc Argon2 để lưu trữ mật khẩu an toàn thay vì dạng văn bản thuần.
+    \end{itemize}
+
+    \item \textbf{Nâng cao khả năng mở rộng và tin cậy:}  
+    \begin{itemize}
+        \item Triển khai mô hình \textit{Multi-Tracker} hoặc phân tán bằng \textit{Distributed Hash Table (DHT)} để loại bỏ sự phụ thuộc vào một server trung tâm.
+        \item Bổ sung cơ chế đồng bộ và xác nhận tin nhắn (ACK), đảm bảo độ tin cậy khi truyền dữ liệu qua mạng không ổn định.
+    \end{itemize}
+
+    \item \textbf{Cải thiện trải nghiệm người dùng:}  
+    \begin{itemize}
+        \item Bổ sung chức năng gửi tập tin (File Transfer) qua giao thức P2P.  
+        \item Hiển thị trạng thái người dùng (online/offline/typing) và cho phép tùy chỉnh hồ sơ cá nhân.  
+        \item Mở rộng hệ thống thông báo và danh sách bạn bè, hướng tới trải nghiệm tương tự các ứng dụng chat chuyên nghiệp.
+    \end{itemize}
+\end{itemize}
+
+\noindent
+\textbf{Kết luận chung:}  
+Đề tài không chỉ giúp nhóm củng cố kiến thức lý thuyết về mạng máy tính mà còn rèn luyện kỹ năng lập trình mạng ở cấp độ hệ thống. Kết quả đạt được chứng minh tính khả thi của việc xây dựng các ứng dụng mạng phân tán từ nền tảng socket, mở ra nhiều hướng phát triển chuyên sâu hơn trong tương lai.
+
