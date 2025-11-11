@@ -2,13 +2,28 @@
 \addcontentsline{toc}{part}{Chương 6: Kết luận}
 %============================================================================
 
-\section*{1. Tổng kết kết quả đạt được}
-\addcontentsline{toc}{section}{1. Tổng kết kết quả đạt được}
+\section*{6.1. Tổng kết kết quả đạt được}
+\addcontentsline{toc}{section}{6.1. Tổng kết kết quả đạt được}
+
+Sau quá trình phân tích, thiết kế và hiện thực, nhóm đã hoàn thành đầy đủ các mục tiêu đề ra, xây dựng thành công một ứng dụng mạng hoàn chỉnh, qua đó áp dụng hiệu quả các kiến thức nền tảng về mạng máy tính, giao thức truyền thông và lập trình socket.
+
+\begin{itemize}
+    \item \textbf{Hoàn thiện HTTP Server và cơ chế Cookie:}  
+    Hệ thống đã hiện thực thành công máy chủ HTTP và Proxy ở mức socket thấp, đảm bảo xử lý chính xác luồng xác thực và quản lý phiên làm việc (session) thông qua cookie. Chức năng này đáp ứng đầy đủ yêu cầu của Nhiệm vụ 2.1.
+
+    \item \textbf{Xây dựng kiến trúc Chat Hybrid:}  
+    Dự án đã triển khai một mô hình chat kết hợp (hybrid) giữa hai kiến trúc Client–Server và Peer–to–Peer, bao gồm hai thành phần chính là Tracker Server (điều phối và khám phá) và Peer Client (giao tiếp trực tiếp). Hệ thống hoạt động ổn định, có khả năng mở rộng linh hoạt.
+
+    \item \textbf{Hiện thực các hình thức giao tiếp đa dạng:}  
+    Ứng dụng hỗ trợ ba chế độ liên lạc chính: chat nhóm (qua kênh \#general), chat riêng P2P, và broadcast toàn hệ thống, đáp ứng đầy đủ nhu cầu trao đổi giữa các người dùng.
+
+    \item \textbf{Phát triển giao diện Web hoàn chỉnh:}  
+    Giao diện người dùng được xây dựng bằng HTML5, CSS3 và JavaScript (ES6), kết nối trực tiếp với backend Python thông qua WebSocket, mang lại trải nghiệm tương tác thời gian thực, mượt mà và hiện đại.
+
+    \item \textbf{Tối ưu trải nghiệm và tính tiện dụng:}  
+    Hệ thống hỗ trợ lưu trạng thái đăng nhập bằng cơ chế \textit{localStorage}, tự động đăng nhập lại sau khi tải lại trang, đồng thời đảm bảo sự ổn định trong quá trình thử nghiệm thực tế.
+\end{itemize}
+
+Tổng thể, đề tài đã được hoàn thiện và vận hành đúng theo mục tiêu ban đầu, vượt qua các yêu cầu cốt lõi về kỹ thuật và chức năng.
 
 %============================================================================
-\section*{2. Hạn chế}
-\addcontentsline{toc}{section}{2. Hạn chế}
-
-%============================================================================
-\section*{3. Hướng phát triển}
-\addcontentsline{toc}{section}{3. Hướng phát triển}
