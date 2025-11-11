@@ -2,9 +2,17 @@
 \addcontentsline{toc}{part}{Chương 5: Kiểm thử và kết quả}
 %============================================================================
 
-\section*{1. Kịch bản kiểm thử}
-\addcontentsline{toc}{section}{1. Kịch bản kiểm thử}
-
+\section*{1. Kịch bản và Môi trường kiểm thử}
+\addcontentsline{toc}{section}{1. Kịch bản và Môi trường kiểm thử}
+\begin{itemize}
+    \item \textbf{Môi trường: }Các kịch bản được thực hiện trên một máy tính duy nhất chạy hệ điều hành Windows, mô phỏng một môi trường mạng cục bộ (LAN). Các tiến trình server và client được khởi chạy trên các cửa sổ dòng lệnh (PowerShell) riêng biệt. Giao diện người dùng được truy cập thông qua trình duyệt web ở chế độ ẩn danh để đảm bảo không bị ảnh hưởng bởi cache.
+    \item \textbf{Địa chỉ IP: }
+    \begin{itemize}
+        \item Tracker Server chạy trên \texttt{0.0.0.0:8001}.
+        \item Các Peer Client kết nối đến Tracker Server qua địa chỉ \texttt{127.0.0.1:8001}.
+        \item Địa chỉ P2P được các Peer Client đăng ký với Tracker là địa chỉ IP cục bộ của máy (ví dụ: \texttt{192.168.1.6}).
+    \end{itemize}
+\end{itemize}
 %============================================================================
 \section*{2. Kết quả thực nghiệm}
 \addcontentsline{toc}{section}{2. Kết quả thực nghiệm}
