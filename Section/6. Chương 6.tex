@@ -27,3 +27,23 @@ Sau quá trình phân tích, thiết kế và hiện thực, nhóm đã hoàn th
 Tổng thể, đề tài đã được hoàn thiện và vận hành đúng theo mục tiêu ban đầu, vượt qua các yêu cầu cốt lõi về kỹ thuật và chức năng.
 
 %============================================================================
+\section*{6.2. Hạn chế của hệ thống}
+\addcontentsline{toc}{section}{6.2. Hạn chế của hệ thống}
+
+Mặc dù hệ thống đã hoạt động ổn định, một số hạn chế vẫn tồn tại, chủ yếu ở khía cạnh bảo mật và khả năng mở rộng:
+
+\begin{itemize}
+    \item \textbf{Bảo mật:}  
+    Các gói tin và thông tin người dùng (bao gồm mật khẩu và nội dung tin nhắn) hiện vẫn được truyền ở dạng văn bản thô, chưa được mã hóa. Việc lưu trữ mật khẩu trực tiếp trên Tracker Server cũng tiềm ẩn rủi ro an ninh.
+
+    \item \textbf{Khả năng chịu lỗi và mở rộng:}  
+    Tracker Server đang là \textit{Single Point of Failure}. Nếu máy chủ này gặp sự cố, toàn bộ mạng lưới sẽ không thể khám phá hoặc kết nối với nhau.
+
+    \item \textbf{Độ tin cậy của giao thức P2P:}  
+    Cơ chế truyền tin giữa các peer còn đơn giản, chưa có biện pháp xử lý mất gói, xác nhận tin nhắn hay tái truyền dữ liệu khi xảy ra lỗi mạng.
+
+    \item \textbf{Vấn đề NAT Traversal:}  
+    Hệ thống hiện chỉ hoạt động ổn định trong mạng nội bộ (LAN). Khi các peer nằm sau các bộ định tuyến NAT khác nhau, kết nối P2P trực tiếp sẽ thất bại do chưa tích hợp các kỹ thuật vượt NAT như STUN/TURN.
+\end{itemize}
+
+%============================================================================
