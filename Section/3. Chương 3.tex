@@ -2,8 +2,8 @@
 \addcontentsline{toc}{part}{Chương 3: Phân tích và thiết kế hệ thống}
 %============================================================================
 
-\section*{1. Kiến trúc tổng thể}
-\addcontentsline{toc}{section}{1. Kiến trúc tổng thể}
+\section*{3.1. Kiến trúc tổng thể}
+\addcontentsline{toc}{section}{3.1. Kiến trúc tổng thể}
 Hệ thống được thiết kế theo một kiến trúc đa thành phần, phân tách rõ ràng các vai trò và trách nhiệm nhằm đảm bảo tính module, dễ bảo trì và khả năng mở rộng. Sơ đồ dưới đây minh họa mối quan hệ và luồng tương tác giữa các thành phần chính của hệ thống.
 
 % Chèn hình minh họa ở đây
@@ -16,7 +16,7 @@ Hệ thống được thiết kế theo một kiến trúc đa thành phần, ph
 
 Kiến trúc này gồm ba thành phần chính, mỗi thành phần có vai trò riêng nhưng phối hợp chặt chẽ với nhau:
 
-\subsection*{Tracker Server}
+\subsection*{3.1.1. Tracker Server}
 Đây là thành phần trung tâm, hoạt động như một trung tâm điều phối trong giai đoạn Client-Server. Nó là một tiến trình độc lập, lắng nghe trên một port cố định và có các vai trò chính sau:
 \begin{itemize}
     \item \textbf{Quản lý định danh và xác thực:} Tracker Server duy trì cơ sở dữ liệu người dùng đơn giản (\texttt{users\_credentials}) và cung cấp API \texttt{/login} để xác thực danh tính của các peer khi tham gia mạng.
@@ -25,7 +25,7 @@ Kiến trúc này gồm ba thành phần chính, mỗi thành phần có vai tr�
     \item \textbf{Hỗ trợ khám phá peer (Peer Discovery):} API \texttt{/get-list} cho phép peer truy vấn và lấy danh sách các peer khác, làm tiền đề cho việc thiết lập kết nối P2P.
 \end{itemize}
 
-\subsection*{Peer Client}
+\subsection*{3.1.2. Peer Client}
 Đây là thành phần cốt lõi và phức tạp nhất, được thiết kế như một tiến trình daemon chạy trên máy của người dùng. Mỗi peer client thực hiện đồng thời ba vai trò:
 \begin{itemize}
     \item \textbf{Vai trò Client (với Tracker):} Chủ động kết nối TCP đến Tracker Server để xác thực, đăng ký thông tin và tham gia kênh.
@@ -37,7 +37,7 @@ Kiến trúc này gồm ba thành phần chính, mỗi thành phần có vai tr�
     \end{itemize}
 \end{itemize}
 
-\subsection*{Giao diện người dùng (Web UI)}
+\subsection*{3.1.3. Giao diện người dùng (Web UI)}
 Đây là lớp hiển thị của ứng dụng, đóng vai trò như "bộ điều khiển từ xa" cho peer client. Nhiệm vụ của nó gồm:
 \begin{itemize}
     \item \textbf{Hiển thị trạng thái:} Hiển thị danh sách kênh, danh sách peer và nội dung chat dựa trên dữ liệu được đẩy xuống qua WebSocket.
@@ -47,12 +47,12 @@ Kiến trúc này gồm ba thành phần chính, mỗi thành phần có vai tr�
 \end{itemize}
 
 %============================================================================
-\section*{2. Thiết kế các Module chính}
-\addcontentsline{toc}{section}{2. Thiết kế các Module chính}
+\section*{3.2. Thiết kế các Module chính}
+\addcontentsline{toc}{section}{3.2. Thiết kế các Module chính}
 
 Hệ thống được cấu thành từ ba module chính, hoạt động độc lập nhưng tương tác chặt chẽ với nhau: \textbf{Tracker Server}, \textbf{Peer Client} và \textbf{Giao diện Web}. Thiết kế của mỗi module được tối ưu hóa cho vai trò cụ thể của nó.
 
-\subsection*{Tracker Server}
+\subsection*{3.2.1. Tracker Server}
 
 Tracker Server được xây dựng như một dịch vụ API RESTful đơn giản bằng framework WeApRous. Nó quản lý trạng thái tập trung của toàn bộ mạng lưới P2P. Để đảm bảo an toàn dữ liệu khi nhiều peer truy cập đồng thời, các biến toàn cục như \texttt{peers\_list} và \texttt{channels\_list} được bảo vệ bằng \texttt{threading.Lock}.
 
@@ -146,7 +146,7 @@ Các API chính của Tracker Server bao gồm:
     \end{verbatim}
 \end{itemize}
 
-\subsection*{Peer Client}
+\subsection*{3.2.2. Peer Client}
 
 Peer Client là module phức tạp nhất, được thiết kế để chạy như một tiến trình nền đa nhiệm. Khi \texttt{peer\_client.py} được thực thi, hàm \texttt{start()} sẽ khởi tạo ba server độc lập, mỗi server chạy trên một luồng riêng để tránh block lẫn nhau:
 
@@ -156,7 +156,7 @@ Peer Client là module phức tạp nhất, được thiết kế để chạy n
     \item \texttt{\_run\_websocket\_server}: mở server WebSocket trên \texttt{websocket\_port}, sẵn sàng nhận kết nối từ giao diện web để giao tiếp hai chiều.
 \end{itemize}
 
-\subsubsection*{Luồng kết nối P2P (Handshake)}
+\subsection*{3.2.3. Luồng kết nối P2P (Handshake)}
 
 Quy trình thiết lập kết nối trực tiếp giữa hai peer (ví dụ Alice và Bob) được thiết kế theo cơ chế "handshake":
 
@@ -175,7 +175,7 @@ Quy trình thiết lập kết nối trực tiếp giữa hai peer (ví dụ Ali
     \item \textbf{Bắt đầu lắng nghe:} Mỗi kết nối tạo luồng \texttt{\_listen\_to\_peer} để nhận tin nhắn tương lai.
 \end{enumerate}
 
-\subsection*{Giao diện Web (chat.html)}
+\subsection*{3.2.4. Giao diện Web (chat.html)}
 
 Giao diện được thiết kế như một \textit{Single-Page Application} (SPA) đơn giản, nhận dữ liệu từ \texttt{peer\_client.py}.
 
@@ -193,11 +193,11 @@ Giao diện được thiết kế như một \textit{Single-Page Application} (S
 
 
 %============================================================================
-\section*{3. Thiết kế Giao thức}
-\addcontentsline{toc}{section}{3. Thiết kế Giao thức}
+\section*{4.3. Thiết kế Giao thức}
+\addcontentsline{toc}{section}{4.3. Thiết kế Giao thức}
 Để các thành phần của hệ thống có thể giao tiếp và hiểu lẫn nhau, hai giao thức ứng dụng đơn giản đã được thiết kế dựa trên các kênh truyền TCP và WebSocket.
 
-\subsection*{Giao thức P2P giữa các Peer}
+\subsection*{4.3.1. Giao thức P2P giữa các Peer}
 
 Giao thức này được sử dụng để trao đổi dữ liệu trực tiếp giữa các tiến trình \texttt{peer\_client.py}. Toàn bộ dữ liệu được đóng gói dưới dạng JSON và gửi qua kết nối TCP. Mỗi thông điệp JSON đều chứa trường \texttt{type} để xác định mục đích của nó.
 
@@ -251,7 +251,7 @@ Các loại thông điệp chính:
 \end{verbatim}
 \end{itemize}
 
-\subsection*{Giao thức WebSocket giữa UI và Backend}
+\subsection*{4.3.2. Giao thức WebSocket giữa UI và Backend}
 
 Giao thức này được thiết kế để giao tiếp giữa giao diện web (\texttt{chat.html}) và tiến trình \\\texttt{peer\_client.py}. Nó hoạt động theo mô hình \textit{command-based}, trong đó UI gửi các lệnh dạng văn bản thô, và backend trả về các thông điệp JSON.
 
