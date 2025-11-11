@@ -2,15 +2,11 @@
 \addcontentsline{toc}{part}{Chương 4: Hiện thực chương trình}
 %============================================================================
 
-\section*{1. Môi trường và Công cụ}
-\addcontentsline{toc}{section}{1. Môi trường và Công cụ}
+\section*{4.1. Môi trường và Công cụ}
+\addcontentsline{toc}{section}{4.1. Môi trường và Công cụ}
 Chương này trình bày chi tiết các khía cạnh kỹ thuật trong quá trình xây dựng hệ thống, bao gồm môi trường phát triển, công cụ sử dụng, cũng như mã nguồn then chốt hiện thực hai chức năng cốt lõi: \textbf{HTTP Server với Cookie Session} và \textbf{Ứng dụng Chat Hybrid (P2P + WebSocket)}.
 
-\section*{Môi trường và Công cụ Phát triển}
-
-Để đảm bảo hệ thống vừa đáp ứng đúng yêu cầu kỹ thuật, vừa có tính ổn định và dễ mở rộng, nhóm đã lựa chọn bộ công cụ và thư viện phổ biến, mạnh mẽ nhưng vẫn giữ mức độ “tự hiện thực” cao ở tầng mạng (network layer).
-
-\subsection*{Ngôn ngữ lập trình}
+\subsection*{4.1.1. Ngôn ngữ lập trình}
 
 \begin{itemize}
     \item \textbf{Python 3.x}:  
@@ -22,7 +18,7 @@ Chương này trình bày chi tiết các khía cạnh kỹ thuật trong quá t
     Kết hợp HTML và CSS để tạo giao diện hiện đại, trong khi JavaScript (với WebSocket và API Fetch) đảm nhận phần logic tương tác thời gian thực.
 \end{itemize}
 
-\subsection*{Các thư viện Python chính sử dụng}
+\subsection*{4.1.2. Các thư viện Python chính sử dụng}
 
 \begin{itemize}
     \item \textbf{socket}:  
@@ -48,7 +44,7 @@ Chương này trình bày chi tiết các khía cạnh kỹ thuật trong quá t
     Được sử dụng để “gắn” tham chiếu đối tượng \texttt{PeerClient} vào lớp \texttt{CustomHandler} trong HTTP Server một cách an toàn, giúp lớp xử lý request có thể truy cập và thao tác trực tiếp trên trạng thái nội bộ của client hiện tại.
 \end{itemize}
 
-\subsection*{Công cụ phát triển phía Client (Trình duyệt)}
+\subsection*{4.1.3. Công cụ phát triển phía Client (Trình duyệt)}
 
 \begin{itemize}
     \item \textbf{WebSocket API}:  
@@ -70,14 +66,14 @@ Chương này trình bày chi tiết các khía cạnh kỹ thuật trong quá t
 \end{itemize}
 
 %============================================================================
-\section*{2. HTTP Server với Cookie Session}
-\addcontentsline{toc}{section}{2. HTTP Server với Cookie Session}
+\section*{4.2. HTTP Server với Cookie Session}
+\addcontentsline{toc}{section}{4.2. HTTP Server với Cookie Session}
 
 Phần này trình bày chi tiết cách các chức năng trong đề bài đã được hiện thực, kèm các đoạn mã nguồn minh họa cho các giải pháp kỹ thuật đã áp dụng.  
 Máy chủ HTTP cơ bản được xây dựng hoàn toàn bằng \texttt{socket} và \texttt{threading}, không sử dụng framework, giúp hiểu rõ cơ chế hoạt động của HTTP ở mức nền tảng.  
 Logic xử lý request được đóng gói trong lớp \texttt{HttpAdapter} (file \texttt{daemon/httpadapter.py}), trong khi việc khởi tạo server và quản lý luồng được triển khai trong \texttt{daemon/backend.py}.
 
-\subsection*{a. Khởi tạo Server và Xử lý Đa luồng}
+\subsection*{4.2.1. Khởi tạo Server và Xử lý Đa luồng}
 
 Nền tảng của máy chủ là khả năng xử lý nhiều kết nối đồng thời. Hàm \texttt{run\_backend} chịu trách nhiệm lắng nghe kết nối mới và tạo luồng riêng biệt cho mỗi client.  
 \textbf{Đoạn mã 4.1: Khởi tạo server và tạo luồng mới cho mỗi client trong \texttt{daemon/backend.py}}
@@ -103,7 +99,7 @@ def run_backend(ip, port, routes):
         print("Socket error: {}".format(e))
 \end{lstlisting}
 
-\subsection*{b. Xử lý Yêu cầu Đăng nhập (Task 1A)}
+\subsection*{4.2.2. Xử lý Yêu cầu Đăng nhập (Task 1A)}
 
 Khi người dùng gửi yêu cầu POST đến \texttt{/login}, hàm \texttt{handle\_login} trong \texttt{HttpAdapter} sẽ được gọi để phân tích dữ liệu form, kiểm tra thông tin đăng nhập và thiết lập cookie nếu hợp lệ.  
 
@@ -133,7 +129,7 @@ def handle_login(self, req, resp):
         return (e["status"], {"Content-Type": e["content_type"]}, e["body"])
 \end{lstlisting}
 
-\subsection*{c. Kiểm soát Truy cập dựa trên Cookie (Task 1B)}
+\subsection*{4.2.3. Kiểm soát Truy cập dựa trên Cookie (Task 1B)}
 
 Để bảo vệ các tài nguyên nhạy cảm, hàm \texttt{cookie\_auth\_guard} được triển khai để kiểm tra tính hợp lệ của cookie trong mỗi request.  
 Nếu không có hoặc cookie sai, người dùng sẽ bị chặn truy cập và nhận trang lỗi 401.
@@ -156,14 +152,14 @@ def cookie_auth_guard(self, req):
 Thông qua các thành phần trên, hệ thống đã hoàn chỉnh chức năng của một \textbf{HTTP Server có quản lý phiên người dùng bằng Cookie Session}.
 
 %============================================================================
-\section*{3. Ứng dụng Chat Hybrid (Client-Server kết hợp P2P)}
-\addcontentsline{toc}{section}{3. Ứng dụng Chat Hybrid (Client-Server kết hợp P2P)}
+\section*{4.3. Ứng dụng Chat Hybrid (Client-Server kết hợp P2P)}
+\addcontentsline{toc}{section}{4.3. Ứng dụng Chat Hybrid (Client-Server kết hợp P2P)}
 
 Nhiệm vụ này yêu cầu xây dựng một hệ thống chat hoàn chỉnh, kết hợp cả hai mô hình \textbf{Client-Server} và \textbf{Peer-to-Peer (P2P)}.  
 Hệ thống được chia thành hai thành phần chính: \textbf{Tracker Server} (\texttt{start\_chatapp.py}) và \textbf{Peer Client} (\texttt{peer\_client.py}).
 
 %----------------------------------------------------------------------------
-\subsection*{a. Tracker Server – Trung tâm điều phối}
+\subsection*{4.3.1. Tracker Server – Trung tâm điều phối}
 
 Tracker Server đóng vai trò là “bộ não” trung tâm của mạng lưới. Thành phần này được xây dựng dựa trên framework \texttt{WeApRous} được cung cấp sẵn.  
 Nó sử dụng các biến toàn cục được bảo vệ bởi \texttt{threading.Lock} để đảm bảo an toàn khi nhiều luồng truy cập và ghi dữ liệu đồng thời.  
@@ -197,7 +193,7 @@ Mỗi khi có yêu cầu \texttt{POST /submit-info}, hàm \texttt{submit\_info()
 Khóa \texttt{peers\_lock} đảm bảo rằng việc cập nhật danh sách \texttt{peers\_list} là an toàn, ngay cả khi nhiều peer đăng ký cùng lúc.
 
 %----------------------------------------------------------------------------
-\subsection*{b. Peer Client – Kiến trúc Đa Server}
+\subsection*{4.3.2. Peer Client – Kiến trúc Đa Server}
 
 \texttt{PeerClient} là thành phần phức tạp nhất của hệ thống, được thiết kế như một tiến trình đa nhiệm có thể đảm nhiệm nhiều vai trò đồng thời.  
 Khi được khởi động, hàm \texttt{start()} sẽ tạo ra ba luồng chạy song song, tương ứng với ba server độc lập:
@@ -229,7 +225,7 @@ class PeerClient:
 Cấu trúc đa luồng này đảm bảo rằng giao diện người dùng có thể hoạt động mượt mà, trong khi các kết nối mạng được xử lý song song mà không làm nghẽn tiến trình chính.
 
 %----------------------------------------------------------------------------
-\subsection*{c. Giai đoạn Client-Server: Khám phá Peer}
+\subsection*{4.3.3. Giai đoạn Client-Server: Khám phá Peer}
 
 Trong giai đoạn này, một \texttt{Peer Client} đóng vai trò là “Client”, gửi yêu cầu đến \texttt{Tracker Server} để đăng ký thông tin và khám phá các peer khác trong cùng kênh.
 
@@ -267,7 +263,7 @@ def join_channel(self, channel):
 Việc sử dụng luồng riêng cho mỗi kết nối đảm bảo rằng quá trình khám phá và kết nối nhiều peer không gây treo giao diện hoặc nghẽn mạng.
 
 %----------------------------------------------------------------------------
-\subsection*{d. Giai đoạn Peer-to-Peer: Giao tiếp trực tiếp}
+\subsection*{4.3.4. Giai đoạn Peer-to-Peer: Giao tiếp trực tiếp}
 
 Sau khi quá trình khám phá hoàn tất, các peer có thể giao tiếp trực tiếp với nhau mà không cần qua Tracker.  
 Hàm \texttt{connect\_peer()} (bên chủ động) và \texttt{\_handle\_peer\_connection()} (bên bị động) hiện thực quy trình “bắt tay” (handshake) và thiết lập kết nối TCP ổn định.  
@@ -299,8 +295,8 @@ def _listen_to_peer(self, conn, peer_username):
 Nhờ cơ chế này, hệ thống cho phép các peer gửi và nhận tin nhắn trong thời gian thực mà không cần máy chủ trung gian, đạt được mục tiêu \textbf{kết hợp mô hình Client-Server và P2P trong cùng một ứng dụng}.
 
 %============================================================================
-\section*{4. ``Put It All Together'' – Tích hợp Hệ thống Hoàn chỉnh}
-\addcontentsline{toc}{section}{4. ``Put It All Together'' – Tích hợp Hệ thống Hoàn chỉnh}
+\section*{4.4. ``Put It All Together'' – Tích hợp Hệ thống Hoàn chỉnh}
+\addcontentsline{toc}{section}{4.4. ``Put It All Together'' – Tích hợp Hệ thống Hoàn chỉnh}
 Nhiệm vụ này yêu cầu kết hợp các kỹ năng đã học từ việc xây dựng \textbf{HTTP Server (Task 1)} và các thành phần của \textbf{Ứng dụng Chat Hybrid (Task 2)} để tạo ra một hệ thống thống nhất, liền mạch và có trải nghiệm người dùng hoàn chỉnh. Hệ thống được hiện thực thông qua kiến trúc ba lớp rõ ràng:
 \begin{itemize}
     \item \textbf{Backend Logic (Python)} – xử lý nghiệp vụ mạng và giao tiếp P2P.
@@ -308,7 +304,7 @@ Nhiệm vụ này yêu cầu kết hợp các kỹ năng đã học từ việc 
     \item \textbf{Giao diện Người dùng (JavaScript)} – cung cấp trải nghiệm trực quan và tương tác.
 \end{itemize}
 
-\subsection*{a. Tích hợp Giao diện Web và Backend Logic}
+\subsection*{4.4.1. Tích hợp Giao diện Web và Backend Logic}
 
 Thay vì hoạt động như một ứng dụng dòng lệnh (CLI), tệp \texttt{peer\_client.py} được nâng cấp để đóng vai trò \textbf{server backend} phục vụ cho giao diện web. Mục tiêu của việc tích hợp này là:
 \begin{itemize}
@@ -355,7 +351,7 @@ def _handle_ui_command(self, cmd):
         self.send_peer(username, message)  
 \end{lstlisting}
 
-\subsection*{b. Kết hợp Quản lý Session (Cookie và localStorage)}
+\subsection*{4.4.2. Kết hợp Quản lý Session (Cookie và localStorage)}
 
 Để đáp ứng yêu cầu ``HTTP Cookies work'' trong Task 1 và đồng thời đảm bảo trải nghiệm người dùng liền mạch, hệ thống kết hợp cả hai cơ chế lưu trữ phía client: \textbf{Cookie} và \textbf{localStorage}.
 
