@@ -34,7 +34,7 @@ Thông qua việc hoàn thành hai nhiệm vụ trên, đề tài hướng đế
 Để đáp ứng các mục tiêu đã đề ra, dự án tập trung thiết kế và hiện thực một hệ thống hoàn chỉnh với các chức năng cốt lõi sau:
 
 \begin{itemize}
-    \item \textbf{HTTP Server và Proxy cơ bản:} Xây dựng thành công máy chủ HTTP từ thư viện \textit{socket} cấp thấp, có khả năng xử lý yêu cầu GET và POST. Hệ thống cũng bao gồm Proxy Server đơn giản để chuyển tiếp request HTTP, minh họa cho kiến trúc nhiều lớp trong ứng dụng web thực tế.
+    \item \textbf{HTTP Server và Proxy cơ bản:} Xây dựng thành công máy chủ HTTP từ thư viện \textit{socket}, có khả năng xử lý yêu cầu GET và POST. Hệ thống cũng bao gồm Proxy Server đơn giản để chuyển tiếp request HTTP, minh họa cho kiến trúc nhiều lớp trong ứng dụng web thực tế.
     
     \item \textbf{Cơ chế xác thực và quản lý phiên:} Hiện thực quy trình xác thực người dùng. Sau khi đăng nhập thành công, máy chủ thiết lập HTTP Cookie trên trình duyệt để duy trì trạng thái phiên – một yếu tố cơ bản trong các ứng dụng web hiện đại.
     
@@ -44,7 +44,7 @@ Thông qua việc hoàn thành hai nhiệm vụ trên, đề tài hướng đế
         \item \textit{Peer Client:} Vừa là client của Tracker Server, vừa là server trong các kết nối P2P.
     \end{itemize}
     
-    \item \textbf{Giao thức Client-Server cho việc khám phá Peer:} Cho phép Peer Client gửi thông tin (địa chỉ IP, port) lên Tracker Server để đăng ký, đồng thời truy vấn danh sách các peer khác đang trực tuyến.
+    \item \textbf{Giao thức Client-Server:} Cho phép Peer Client gửi thông tin (địa chỉ IP, port) lên Tracker Server để đăng ký, đồng thời truy vấn danh sách các peer khác đang trực tuyến.
     
     \item \textbf{Giao thức Peer-to-Peer để giao tiếp trực tiếp:} Hai Peer Client có thể thiết lập kết nối TCP trực tiếp sau khi biết địa chỉ của nhau. Cơ chế “bắt tay” (handshake) được triển khai để xác nhận kết nối trước khi trao đổi dữ liệu.
     
