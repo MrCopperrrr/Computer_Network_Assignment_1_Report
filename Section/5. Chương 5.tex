@@ -108,6 +108,32 @@ python start_proxy.py --server-ip 0.0.0.0 --server-port 8080
 Chức năng xử lý request, xác thực đăng nhập và quản lý phiên bằng cookie hoạt động chính xác theo thiết kế. Hệ thống có thể phục vụ nhiều client đồng thời và duy trì phiên làm việc ổn định.
 
 % -------------------------------------------------------------
+\subsection*{5.2.2. Kiểm thử HTTP Server và Cookie Session bằng phần mềm Postman}
+Sử dụng ứng dụng Postman Desktop để kiểm tra luồng xác thực cookie.
+\subsubsection*{Bước 1: Khởi chạy các Server}
+\begin{itemize}
+
+    \item \textbf{Mở Terminal 1}, khởi chạy \textit{Backend Server}:
+    \begin{lstlisting}[language=bash]
+python start_backend.py --server-ip <local-ip> --server-port 9000
+    \end{lstlisting}
+    \item \textbf{Kết quả: }Log từ PowerShell
+    \begin{lstlisting}[language=bash]
+[Backend] Listening on port 9000    
+    \end{lstlisting}
+    \item \textbf{Mở Terminal 2}, khởi chạy \textit{Proxy Server}:
+    \begin{lstlisting}[language=bash]
+python start_proxy.py --server-ip 0.0.0.0 --server-port 8080
+    \end{lstlisting}
+    \item \textbf{Kết quả: }Log từ PowerShell
+    \begin{lstlisting}[language=bash]
+[Host] 192.168.1.6:8080
+[PORT] 192.168.1.6:9000
+[POLICY] round-robin
+[Proxy] Listening on IP 0.0.0.0 port 8080    
+    \end{lstlisting}
+\end{itemize}
+
 
 
 
