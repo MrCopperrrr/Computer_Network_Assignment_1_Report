@@ -38,12 +38,12 @@ Kiến trúc này gồm ba thành phần chính, mỗi thành phần có vai tr�
 \end{itemize}
 
 \subsection*{3.1.3. Giao diện người dùng (Web UI)}
-Đây là lớp hiển thị của ứng dụng, đóng vai trò như "bộ điều khiển từ xa" cho peer client. Nhiệm vụ của nó gồm:
+Đây là lớp hiển thị của ứng dụng. Nhiệm vụ của nó gồm:
 \begin{itemize}
     \item \textbf{Hiển thị trạng thái:} Hiển thị danh sách kênh, danh sách peer và nội dung chat dựa trên dữ liệu được đẩy xuống qua WebSocket.
     \item \textbf{Thu thập tương tác người dùng:} Ghi nhận hành động gõ tin nhắn, nhấn gửi, chọn cuộc trò chuyện.
     \item \textbf{Gửi lệnh:} Chuyển hóa các tương tác thành lệnh đơn giản (ví dụ: \texttt{send bob hello world}) gửi đến peer client để xử lý.
-    \item \textbf{Quản lý session phía client:} Sử dụng \texttt{localStorage} để lưu thông tin phiên, cho phép tự động kết nối lại khi tải lại trang, mang lại trải nghiệm liền mạch.
+    \item \textbf{Quản lý session phía client:} Lưu thông tin phiên, cho phép tự động kết nối lại khi tải lại trang, mang lại trải nghiệm liền mạch.
 \end{itemize}
 
 %============================================================================
@@ -180,7 +180,7 @@ Quy trình thiết lập kết nối trực tiếp giữa hai peer (ví dụ Ali
 Giao diện được thiết kế như một \textit{Single-Page Application} (SPA) đơn giản, nhận dữ liệu từ \texttt{peer\_client.py}.
 
 \begin{itemize}
-    \item \textbf{Tải trang và tự động điền:} Peer Client "tiêm" username và peer\_port vào HTML. JavaScript điền form tự động.
+    \item \textbf{Tải trang và tự động điền:} Peer Client truyền username và peer\_port vào HTML. JavaScript điền form tự động.
     \item \textbf{Tự động kết nối (Session):} Kiểm tra \texttt{localStorage}. Nếu tìm thấy phiên hợp lệ, bỏ qua màn hình đăng nhập và tự khởi tạo WebSocket.
     \item \textbf{Kết nối thủ công:} Nếu không có session, người dùng nhập thông tin, nhấn "Connect", lưu session và mở WebSocket.
     \item \textbf{Giao tiếp qua WebSocket:}
@@ -309,7 +309,7 @@ Backend gửi các thông điệp JSON để UI dễ phân tích và cập nhậ
 
 {
     "type": "error",
-    "message": "Connection to charlie timed out."
+    "message": "Connection to john timed out."
 }
 \end{verbatim}
 \end{itemize}
