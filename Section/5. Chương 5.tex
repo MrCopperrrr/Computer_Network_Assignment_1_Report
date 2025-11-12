@@ -284,6 +284,42 @@ Kịch bản này kiểm thử toàn bộ luồng hoạt động của \textbf{�
     \end{lstlisting}
     
 \end{itemize}
+\subsubsection*{Bước 3: Kiểm thử truy cập và đăng nhập trên trình duyệt}
+\begin{itemize}
+    \item Mở trình duyệt ở chế độ ẩn danh, truy cập địa chỉ:
+    \begin{itemize}
+        \item Alice:
+        \begin{center}
+        \texttt{http://localhost:19101/www/chat.html}
+        \end{center}
+        \item Bob:
+        \begin{center}
+        \texttt{http://localhost:19102/www/chat.html}
+        \end{center}
+        \item John:
+        \begin{center}
+        \texttt{http://localhost:19103/www/chat.html}
+        \end{center}
+    \end{itemize}
+    \textbf{Kết quả: } Trang web trả về 3 giao diện đăng nhập cho cả 3 tài khoản Alice, Bob, John đã được điền sẵn các thông tin như Username và P2P port.
+    \begin{figure}[H]
+        \centering
+        \setlength{\fboxsep}{2pt}     
+        \setlength{\fboxrule}{0.5pt}   
+        \fbox{\includegraphics[scale=0.25]{Picture/login3acc.png}}
+        \caption{Giao diện khi truy cập trang đăng nhập}
+    \end{figure}
+    
+    \item Đăng nhập lần lượt các tài khoản để vào giao diện chat.\\
+    \textbf{Kết quả: }Giao diện chat được hiển thị đầy đủ. Tên người dùng được đặt ở góc trái phía trên. Thanh điều hướng chia thành 2 phần (Channels và Peers) đại diện cho chat nhóm và chat cá nhân. Mặc định hệ thống sẽ vào nhóm chat \#general.
+    \begin{figure}[H]
+        \centering
+        \setlength{\fboxsep}{2pt}     
+        \setlength{\fboxrule}{0.5pt}   
+        \fbox{\includegraphics[scale=0.25]{Picture/chatui.png}}
+        \caption{Giao diện sau khi đăng nhập thành công sẵn sàng chat}
+    \end{figure}
+\end{itemize}
 
 
 
