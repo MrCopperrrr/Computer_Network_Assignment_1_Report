@@ -16,11 +16,12 @@
 %============================================================================
 \section*{5.2. Kết quả thực nghiệm}
 \addcontentsline{toc}{section}{5.2. Kết quả thực nghiệm}
-\subsection*{5.2.1. Kiểm thử HTTP Server và Cookie Session}
+\subsection*{5.2.1. Kiểm thử HTTP Server và Cookie Session bằng giao diện UI/UX}
 Kịch bản này nhằm kiểm tra khả năng xử lý \textbf{HTTP request}, \textbf{xác thực}, và \textbf{quản lý phiên bằng cookie} của máy chủ HTTP được tự xây dựng từ đầu.
 \subsubsection*{Bước 1: Khởi chạy các Server}
 
-\begin{enumerate}[label=--]
+\begin{itemize}
+
     \item \textbf{Mở Terminal 1}, khởi chạy \textit{Backend Server}:
     \begin{lstlisting}[language=bash]
 python start_backend.py --server-ip <local-ip> --server-port 9000
@@ -40,11 +41,11 @@ python start_proxy.py --server-ip 0.0.0.0 --server-port 8080
 [POLICY] round-robin
 [Proxy] Listening on IP 0.0.0.0 port 8080    
     \end{lstlisting}
-\end{enumerate}
+\end{itemize}
 
 \subsubsection*{Bước 2: Kiểm thử luồng xác thực trên trình duyệt}
 
-\begin{enumerate}[label=--]
+\begin{itemize}
     \item Mở trình duyệt ở chế độ ẩn danh, truy cập địa chỉ:
     \begin{center}
         \texttt{http://<local-ip>:8080/}
@@ -70,6 +71,7 @@ python start_proxy.py --server-ip 0.0.0.0 --server-port 8080
     \fbox{\includegraphics[scale=0.4]{Picture/login.png}}
     \caption{Giao diện trang web hiển thị form đăng nhập}
     \end{figure}
+
     \item Nhập thông tin:
     \begin{center}
         \texttt{username = admin}, \quad \texttt{password = password}
@@ -81,18 +83,36 @@ python start_proxy.py --server-ip 0.0.0.0 --server-port 8080
         \item Đăng nhập thành công, trình duyệt được chuyển hướng đến \texttt{index.html}.
         \item Trong Developer Tools (F12), một cookie \texttt{auth=true} được thiết lập.
     \end{itemize}
+    \begin{figure}[H]
+    \centering
+    \setlength{\fboxsep}{2pt}     
+    \setlength{\fboxrule}{0.5pt}   
+    \fbox{\includegraphics[scale=0.4]{Picture/loginok.png}}
+    \caption{Giao diện trang web sau khi đăng nhập thành công và có cookie cho phiên đăng nhập}
+    \end{figure}
 
     \item Truy cập lại \texttt{http://<local-ip>:8080/}.
 
     \textbf{Kết quả:} Trang \texttt{index.html} được hiển thị vì trình duyệt đã gửi kèm cookie hợp lệ.
-\end{enumerate}
+    \begin{figure}[H]
+        \centering
+        \setlength{\fboxsep}{2pt}     
+        \setlength{\fboxrule}{0.5pt}   
+        \fbox{\includegraphics[scale=0.4]{Picture/loginok.png}}
+        \caption{Giao diện trang web sau khi reload lại}
+    \end{figure}
+\end{itemize}
+
 
 \subsubsection*{Kết luận:}  
 Chức năng xử lý request, xác thực đăng nhập và quản lý phiên bằng cookie hoạt động chính xác theo thiết kế. Hệ thống có thể phục vụ nhiều client đồng thời và duy trì phiên làm việc ổn định.
 
 % -------------------------------------------------------------
 
-\subsection*{5.2.2. Kiểm thử Ứng dụng Chat Hybrid}
+
+
+% -------------------------------------------------------------
+\subsection*{5.2.3. Kiểm thử Ứng dụng Chat Hybrid}
 
 Kịch bản này kiểm thử toàn bộ luồng hoạt động của \textbf{ứng dụng chat hybrid}, từ quá trình khám phá peer đến giao tiếp \textbf{P2P (Peer-to-Peer)} và quản lý session phía client.
 
