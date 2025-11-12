@@ -25,9 +25,20 @@ Kịch bản này nhằm kiểm tra khả năng xử lý \textbf{HTTP request}, 
     \begin{lstlisting}[language=bash]
 python start_backend.py --server-ip <local-ip> --server-port 9000
     \end{lstlisting}
+    \item \textbf{Kết quả: }Log từ PowerShell
+    \begin{lstlisting}[language=bash]
+[Backend] Listening on port 9000    
+    \end{lstlisting}
     \item \textbf{Mở Terminal 2}, khởi chạy \textit{Proxy Server}:
     \begin{lstlisting}[language=bash]
 python start_proxy.py --server-ip 0.0.0.0 --server-port 8080
+    \end{lstlisting}
+    \item \textbf{Kết quả: }Log từ PowerShell
+    \begin{lstlisting}[language=bash]
+[Host] 192.168.1.6:8080
+[PORT] 192.168.1.6:9000
+[POLICY] round-robin
+[Proxy] Listening on IP 0.0.0.0 port 8080    
     \end{lstlisting}
 \end{enumerate}
 
@@ -38,21 +49,34 @@ python start_proxy.py --server-ip 0.0.0.0 --server-port 8080
     \begin{center}
         \texttt{http://<local-ip>:8080/}
     \end{center}
-    \textbf{Kết quả mong đợi:} Trang web trả về lỗi \texttt{401 Unauthorized} vì chưa có cookie xác thực.
+    \textbf{Kết quả:} Trang web trả về lỗi \texttt{401 Unauthorized} vì chưa có cookie xác thực.
+    \begin{figure}[H]
+    \centering
+    \setlength{\fboxsep}{2pt}     
+    \setlength{\fboxrule}{0.5pt}   
+    \fbox{\includegraphics[scale=0.4]{Picture/401.png}}
+    \caption{Giao diện trang web trả về lỗi 401 Unauthorized}
+    \end{figure}
 
     \item Truy cập trang đăng nhập:
     \begin{center}
         \texttt{http://<local-ip>:8080/login.html}
     \end{center}
-    \textbf{Kết quả mong đợi:} Form đăng nhập hiển thị chính xác.
-
+    \textbf{Kết quả:} Form đăng nhập hiển thị chính xác.
+    \begin{figure}[H]
+    \centering
+    \setlength{\fboxsep}{2pt}     
+    \setlength{\fboxrule}{0.5pt}   
+    \fbox{\includegraphics[scale=0.4]{Picture/login.png}}
+    \caption{Giao diện trang web hiển thị form đăng nhập}
+    \end{figure}
     \item Nhập thông tin:
     \begin{center}
         \texttt{username = admin}, \quad \texttt{password = password}
     \end{center}
     Sau đó gửi form.
 
-    \textbf{Kết quả mong đợi:}
+    \textbf{Kết quả:}
     \begin{itemize}
         \item Đăng nhập thành công, trình duyệt được chuyển hướng đến \texttt{index.html}.
         \item Trong Developer Tools (F12), một cookie \texttt{auth=true} được thiết lập.
@@ -60,7 +84,7 @@ python start_proxy.py --server-ip 0.0.0.0 --server-port 8080
 
     \item Truy cập lại \texttt{http://<local-ip>:8080/}.
 
-    \textbf{Kết quả mong đợi:} Trang \texttt{index.html} được hiển thị vì trình duyệt đã gửi kèm cookie hợp lệ.
+    \textbf{Kết quả:} Trang \texttt{index.html} được hiển thị vì trình duyệt đã gửi kèm cookie hợp lệ.
 \end{enumerate}
 
 \subsubsection*{Kết luận:}  
@@ -78,7 +102,7 @@ Kịch bản này kiểm thử toàn bộ luồng hoạt động của \textbf{�
 python start_chatapp.py --server-ip 0.0.0.0 --server-port 8001
 \end{lstlisting}
 
-\textbf{Kết quả mong đợi:} Server khởi động thành công và lắng nghe trên port 8001.
+\textbf{Kết quả:} Server khởi động thành công và lắng nghe trên port 8001.
 
 \subsubsection*{Bước 2: Khởi chạy các Peer Client}
 
@@ -93,7 +117,7 @@ py peer_client.py --username alice --peer-port 9101
 py peer_client.py --username bob --peer-port 9102
     \end{lstlisting}
 
-    \textbf{Kết quả mong đợi:}
+    \textbf{Kết quả:}
     \begin{itemize}
         \item Mỗi client khởi động thành công.
         \item Mỗi client chạy \textbf{3 server} riêng biệt: P2P, HTTP và WebSocket.
@@ -112,7 +136,7 @@ py peer_client.py --username bob --peer-port 9102
     \item Thực hiện đăng nhập cho cả hai người dùng.
 \end{enumerate}
 
-\textbf{Kết quả mong đợi:}
+\textbf{Kết quả:}
 \begin{itemize}
     \item Cả hai đăng nhập thành công và tự động tham gia vào các kênh \texttt{\#general} và \texttt{\#broadcast}.
     \item Giao diện chat chính được hiển thị đúng bố cục.
@@ -122,7 +146,7 @@ py peer_client.py --username bob --peer-port 9102
 
 \begin{itemize}
     \item Trên giao diện của Alice, chọn kênh \texttt{\#general} và gửi một tin nhắn.
-    \item \textbf{Kết quả mong đợi:} Tin nhắn của Alice hiển thị đồng thời trên giao diện của Alice và Bob (vì cả hai cùng trong kênh).
+    \item \textbf{Kết quả:} Tin nhắn của Alice hiển thị đồng thời trên giao diện của Alice và Bob (vì cả hai cùng trong kênh).
 \end{itemize}
 
 \subsubsection*{Kiểm thử Chat Riêng (P2P)}
@@ -130,21 +154,21 @@ py peer_client.py --username bob --peer-port 9102
 \begin{itemize}
     \item Trên giao diện của Alice, chuyển sang tab \texttt{Peers}, danh sách hiển thị \texttt{bob}.
     \item Chọn \texttt{bob} để mở cửa sổ chat riêng và gửi tin nhắn.
-    \item \textbf{Kết quả mong đợi:} Giao diện của Bob hiển thị chấm thông báo bên cạnh tên \texttt{alice}. Khi Bob mở cửa sổ chat, lịch sử tin nhắn được hiển thị đầy đủ.
+    \item \textbf{Kết quả:} Giao diện của Bob hiển thị chấm thông báo bên cạnh tên \texttt{alice}. Khi Bob mở cửa sổ chat, lịch sử tin nhắn được hiển thị đầy đủ.
 \end{itemize}
 
 \subsubsection*{Kiểm thử Broadcast}
 
 \begin{itemize}
     \item Trên giao diện của Alice, chọn kênh \texttt{\#broadcast} và gửi tin nhắn.
-    \item \textbf{Kết quả mong đợi:} Tin nhắn xuất hiện ngay trên cửa sổ chat của Bob, bất kể Bob đang ở kênh hay cuộc trò chuyện nào.
+    \item \textbf{Kết quả:} Tin nhắn xuất hiện ngay trên cửa sổ chat của Bob, bất kể Bob đang ở kênh hay cuộc trò chuyện nào.
 \end{itemize}
 
 \subsubsection*{Kiểm thử Duy trì Session}
 
 \begin{itemize}
     \item Nhấn F5 để tải lại trang của Alice.
-    \item \textbf{Kết quả mong đợi:} Trang web tự động quay lại giao diện chat mà không cần đăng nhập lại, nhờ thông tin lưu trong \texttt{localStorage}. Cookie ``trình diễn'' vẫn còn hiệu lực.
+    \item \textbf{Kết quả:} Trang web tự động quay lại giao diện chat mà không cần đăng nhập lại, nhờ thông tin lưu trong \texttt{localStorage}. Cookie ``trình diễn'' vẫn còn hiệu lực.
 \end{itemize}
 
 \subsubsection*{Kết quả thực nghiệm}
