@@ -321,7 +321,63 @@ Kịch bản này kiểm thử toàn bộ luồng hoạt động của \textbf{�
     \end{figure}
 \end{itemize}
 
-
+\subsubsection*{Bước 4: Kiểm thử chat trên trình duyệt}
+\begin{itemize}
+    \item \textbf{Test 1:} Alice, Bob, John chat cùng nhau ở \#general \\
+    \textbf{Kết quả: }Nhóm \#general là nhóm mặc định tất cả các Peer khi đăng nhập, có vai trò là nhóm chat chung không có vai trò broadcast. Các tin nhắn được hiển thị trên giao diện của 3 người, có mốc thời gian gửi tin nhắn.
+    \begin{figure}[H]
+        \centering
+        \setlength{\fboxsep}{2pt}     
+        \setlength{\fboxrule}{0.5pt}   
+        \fbox{\includegraphics[scale=0.25]{Picture/3general.png}}
+        \caption{Giao diện 3 người chat ở nhóm \#general}
+    \end{figure}
+    \item \textbf{Test 2:} Alice, Bob, John chat cùng nhau ở \#broadcast \\
+    \textbf{Kết quả: } Nhóm \#broadcast là nhóm mặc định tất cả các Peer khi đăng nhập, có vai trò là nhóm chat chung và có vai trò broadcast, các tin nhắn dạng broadcast sẽ được truyền đến bất kì nhóm chat nào, bất kì đoạn chat cá nhân nào.
+        \begin{figure}[H]
+        \centering
+        \setlength{\fboxsep}{2pt}     
+        \setlength{\fboxrule}{0.5pt}   
+        \fbox{\includegraphics[scale=0.25]{Picture/3broadcast.png}}
+        \caption{Giao diện 3 người chat ở nhóm \#broadcast}
+    \end{figure}
+    \item \textbf{Test 3:} Alice chat broadcast, Bob và John ở \#general (hoặc Bob chat broadcast, John chat broadcast và 2 người còn lại ở \#general)\\
+    \textbf{Kết quả: } Khi Bob và John đang chat với nhau ở \#general khi này Alice nhắn tin broadcast thì Bob và John đều đồng thời nhận được tin nhắn broadcast.
+    \begin{figure}[H]
+        \centering
+        \setlength{\fboxsep}{2pt}     
+        \setlength{\fboxrule}{0.5pt}   
+        \fbox{\includegraphics[scale=0.25]{Picture/1broad2gen.png}}
+        \caption{Giao diện Bob và John ở \#general, Alice broadcast}
+    \end{figure}
+    \item \textbf{Test 4:} Alice chat riêng với Bob (hoặc Alice chat riêng với John, Bob chat riêng với John)\\
+    \textbf{Kết quả: } Alice và Bob đang nhắn tin riêng
+    \begin{figure}[H]
+        \centering
+        \setlength{\fboxsep}{2pt}     
+        \setlength{\fboxrule}{0.5pt}   
+        \fbox{\includegraphics[scale=0.25]{Picture/alicebob.png}}
+        \caption{Giao diện Alice và Bob chat riêng}
+    \end{figure}
+    \item \textbf{Test 5:} John chat broadcast, Alice chat riêng với Bob (hoặc Bob chat broadcast, Alice chat broadcast và 2 người còn lại chat riêng với nhau)\\
+    \textbf{Kết quả: } Alice và Bob đang nhắn tin riêng, khi này John nhắn tin broadcast thì Alice và Bob đều đồng thời nhận được tin nhắn broadcast.
+    \begin{figure}[H]
+        \centering
+        \setlength{\fboxsep}{2pt}     
+        \setlength{\fboxrule}{0.5pt}   
+        \fbox{\includegraphics[scale=0.25]{Picture/johnbroadtoprivate.png}}
+        \caption{Giao diện Alice và Bob chat riêng, John broadcast}
+    \end{figure}
+    \item \textbf{Test 6:} Tạo channel mới, cả 3 đều tham gia chat.\\
+    \textbf{Kết quả: } Alice tạo channel \#CN04, Bob và John đều tham gia chat.
+    \begin{figure}[H]
+        \centering
+        \setlength{\fboxsep}{2pt}     
+        \setlength{\fboxrule}{0.5pt}   
+        \fbox{\includegraphics[scale=0.25]{Picture/CN04.png}}
+        \caption{Giao diện tạo nhóm mới và chat}
+    \end{figure}
+\end{itemize}
 
 
 
