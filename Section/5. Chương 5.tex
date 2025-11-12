@@ -196,98 +196,98 @@ python start_proxy.py --server-ip 0.0.0.0 --server-port 8080
 
 
 % -------------------------------------------------------------
-\subsection*{5.2.3. Kiểm thử Ứng dụng Chat Hybrid}
+\subsection*{5.2.3. Kiểm thử Ứng dụng Chat Hybrid bằng UI/UX}
 
 Kịch bản này kiểm thử toàn bộ luồng hoạt động của \textbf{ứng dụng chat hybrid}, từ quá trình khám phá peer đến giao tiếp \textbf{P2P (Peer-to-Peer)} và quản lý session phía client.
 
-\subsubsection*{Bước 1: Khởi chạy Tracker Server}
-
-\begin{lstlisting}[language=bash]
-python start_chatapp.py --server-ip 0.0.0.0 --server-port 8001
-\end{lstlisting}
-
-\textbf{Kết quả:} Server khởi động thành công và lắng nghe trên port 8001.
-
-\subsubsection*{Bước 2: Khởi chạy các Peer Client}
-
-\begin{enumerate}[label=--]
-    \item \textbf{Mở Terminal 2}, khởi chạy client cho người dùng \texttt{alice}:
+\subsubsection*{Bước 1: Khởi chạy Tracker Server và các Peer Clients}
+\begin{itemize}
+    \item \textbf{Mở Terminal 1: }Khởi chạy Tracker Server:
     \begin{lstlisting}[language=bash]
-py peer_client.py --username alice --peer-port 9101
+    python start_chatapp.py --server-ip 0.0.0.0 --server-port 8001
     \end{lstlisting}
-
-    \item \textbf{Mở Terminal 3}, khởi chạy client cho người dùng \texttt{bob}:
+    \textbf{Kết quả:} Server khởi động thành công và lắng nghe trên port 8001.
     \begin{lstlisting}[language=bash]
-py peer_client.py --username bob --peer-port 9102
+    ============================================================
+    Starting Chat Tracker Server
+    IP: 0.0.0.0
+    Port: 8001
+    ============================================================
+    [Backend] Listening on port 8001
     \end{lstlisting}
+    \item \textbf{Mở Terminal 2: }Khởi chạy Peer Alice:
+    \begin{lstlisting}[language=bash]
+    py peer_client.py --username alice --peer-port 9101 --tracker-ip 
+    127.0.0.1 --tracker-port 8001
+    \end{lstlisting}
+    \textbf{Kết quả:} Peer Alice khởi chạy thành công 
+    \begin{lstlisting}[language=bash]
+    [INIT] Peer 'alice' configured.
+    [INIT] P2P Port: 9101
+    [INIT] HTTP UI Port: 19101
+    [INIT] WebSocket UI Port: 29101
+    [P2P Server] Listening for peers on 0.0.0.0:9101
 
-    \textbf{Kết quả:}
-    \begin{itemize}
-        \item Mỗi client khởi động thành công.
-        \item Mỗi client chạy \textbf{3 server} riêng biệt: P2P, HTTP và WebSocket.
-        \item Các client tự động đăng ký với \texttt{Tracker Server}.
-    \end{itemize}
-\end{enumerate}
+    ============================================================
+    [HTTP Server] Serving custom UI at http://localhost:19101/
+    Peer Client is running.
+    Open http://localhost:19101/www/chat.html in a browser to use the UI.  
+    Press Ctrl+C to stop.
+    ============================================================
 
-\subsubsection*{Bước 3: Kiểm thử Giao diện và Giao tiếp}
+    [UI Server] WebSocket server running on localhost:29101
+    127.0.0.1 - - [12/Nov/2025 17:20:41] "GET / HTTP/1.1" 200
+    \end{lstlisting}
+    \item \textbf{Mở Terminal 3: }Khởi chạy Peer Bob:
+    \begin{lstlisting}[language=bash]
+    py peer_client.py --username bob --peer-port 9102 --tracker-ip 
+    127.0.0.1 --tracker-port 8001
+    \end{lstlisting}
+    \textbf{Kết quả:} Peer Alice khởi chạy thành công 
+    \begin{lstlisting}[language=bash]
+    [INIT] Peer 'bob' configured.
+    [INIT] P2P Port: 9102
+    [INIT] HTTP UI Port: 19102
+    [INIT] WebSocket UI Port: 29102
+    [P2P Server] Listening for peers on 0.0.0.0:9102
 
-\begin{enumerate}[label=--]
-    \item Mở hai cửa sổ trình duyệt ẩn danh riêng biệt cho Alice và Bob.
-    \item Truy cập các URL tương ứng được in ra terminal, ví dụ:
-    \begin{center}
-        \texttt{http://localhost:19101/www/chat.html} \quad (Alice)
-    \end{center}
-    \item Thực hiện đăng nhập cho cả hai người dùng.
-\end{enumerate}
+    ============================================================
+    Peer Client is running.
+    Open http://localhost:19102/www/chat.html in a browser to use the UI.  
+    Press Ctrl+C to stop.
+    ============================================================
+    
+    [HTTP Server] Serving custom UI at http://localhost:19102/
+    [UI Server] WebSocket server running on localhost:29102
+    \end{lstlisting} 
+    \item \textbf{Mở Terminal 4: }Khởi chạy Peer John:
+    \begin{lstlisting}[language=bash]
+    py peer_client.py --username john --peer-port 9103 --tracker-ip 
+    127.0.0.1 --tracker-port 8001
+    \end{lstlisting}
+    \textbf{Kết quả:} Peer Alice khởi chạy thành công 
+    \begin{lstlisting}[language=bash]
+    [INIT] Peer 'john' configured.
+    [INIT] P2P Port: 9103
+    [INIT] HTTP UI Port: 19103
+    [INIT] WebSocket UI Port: 29103
+    [P2P Server] Listening for peers on 0.0.0.0:9103
 
-\textbf{Kết quả:}
-\begin{itemize}
-    \item Cả hai đăng nhập thành công và tự động tham gia vào các kênh \texttt{\#general} và \texttt{\#broadcast}.
-    \item Giao diện chat chính được hiển thị đúng bố cục.
+    ============================================================
+    Peer Client is running.
+    Open http://localhost:19103/www/chat.html in a browser to use the UI.  
+    Press Ctrl+C to stop.
+    ============================================================
+
+    [HTTP Server] Serving custom UI at http://localhost:19103/
+    [UI Server] WebSocket server running on localhost:29103
+    \end{lstlisting}
+    
 \end{itemize}
 
-\subsubsection*{Kiểm thử Chat Nhóm (Kênh \#general)}
 
-\begin{itemize}
-    \item Trên giao diện của Alice, chọn kênh \texttt{\#general} và gửi một tin nhắn.
-    \item \textbf{Kết quả:} Tin nhắn của Alice hiển thị đồng thời trên giao diện của Alice và Bob (vì cả hai cùng trong kênh).
-\end{itemize}
 
-\subsubsection*{Kiểm thử Chat Riêng (P2P)}
 
-\begin{itemize}
-    \item Trên giao diện của Alice, chuyển sang tab \texttt{Peers}, danh sách hiển thị \texttt{bob}.
-    \item Chọn \texttt{bob} để mở cửa sổ chat riêng và gửi tin nhắn.
-    \item \textbf{Kết quả:} Giao diện của Bob hiển thị chấm thông báo bên cạnh tên \texttt{alice}. Khi Bob mở cửa sổ chat, lịch sử tin nhắn được hiển thị đầy đủ.
-\end{itemize}
-
-\subsubsection*{Kiểm thử Broadcast}
-
-\begin{itemize}
-    \item Trên giao diện của Alice, chọn kênh \texttt{\#broadcast} và gửi tin nhắn.
-    \item \textbf{Kết quả:} Tin nhắn xuất hiện ngay trên cửa sổ chat của Bob, bất kể Bob đang ở kênh hay cuộc trò chuyện nào.
-\end{itemize}
-
-\subsubsection*{Kiểm thử Duy trì Session}
-
-\begin{itemize}
-    \item Nhấn F5 để tải lại trang của Alice.
-    \item \textbf{Kết quả:} Trang web tự động quay lại giao diện chat mà không cần đăng nhập lại, nhờ thông tin lưu trong \texttt{localStorage}. Cookie ``trình diễn'' vẫn còn hiệu lực.
-\end{itemize}
-
-\subsubsection*{Kết quả thực nghiệm}
-
-% \begin{figure}[H]
-%     \centering
-%     \includegraphics[width=0.9\textwidth]{images/chat_p2p_demo.png}
-%     \caption{Giao diện của Alice và Bob trong phiên chat P2P.}
-% \end{figure}
-
-% \begin{figure}[H]
-%     \centering
-%     \includegraphics[width=0.85\textwidth]{images/cookie_localstorage_demo.png}
-%     \caption{Cookie và LocalStorage được thiết lập trong Developer Tools.}
-% \end{figure}
 
 \subsubsection*{Kết luận:}  
 Toàn bộ luồng hoạt động của ứng dụng chat hybrid — bao gồm khám phá, giao tiếp P2P, chat nhóm, broadcast và duy trì session — đều hoạt động ổn định, đúng với yêu cầu của đề tài. Hệ thống chứng minh tính tích hợp hoàn chỉnh giữa các thành phần HTTP, WebSocket, và P2P.
