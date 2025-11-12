@@ -93,7 +93,7 @@ Một vấn đề cơ bản với server đơn luồng là không thể phục v
 \addcontentsline{toc}{section}{2.3. Giao thức HTTP và Cookie}
 HTTP (HyperText Transfer Protocol) là giao thức nền tảng của World Wide Web, hoạt động dựa trên mô hình Client-Server. Trong dự án, giao thức này được sử dụng cho việc giao tiếp giữa Peer Client và Tracker Server. Thay vì sử dụng các thư viện HTTP cấp cao, dự án hiện thực việc tạo và phân tích các thông điệp HTTP một cách thủ công qua socket để hiểu rõ bản chất của giao thức.
 
-Một phiên giao tiếp HTTP gồm một \textbf{request} từ client và một \textbf{response} từ server. Cả hai đều là các đoạn văn bản thô (plain text) tuân thủ định dạng nghiêm ngặt.
+Một phiên giao tiếp HTTP gồm một \textbf{request} từ client và một \textbf{response} từ server. Cả hai đều là các đoạn văn bản thô (plain text) tuân thủ định dạng.
 
 \subsection*{2.3.1. HTTP Request}
 Một request từ client gửi lên server gồm ba phần chính:
@@ -162,7 +162,7 @@ WebSocket giải quyết vấn đề trên bằng cách tạo kênh giao tiếp 
 \end{itemize}
 
 \subsection*{2.4.1. Áp dụng trong dự án}
-WebSocket là cầu nối giữa "bộ não" P2P (\texttt{peer\_client.py}) và "giao diện điều khiển" (\texttt{chat.html}). Khi một peer nhận tin nhắn P2P từ peer khác, nó có thể ngay lập tức đẩy tin nhắn lên giao diện trình duyệt thông qua kết nối WebSocket, giúp người dùng thấy tin nhắn gần như tức thời.
+WebSocket là cầu nối giữa P2P (\texttt{peer\_client.py}) và (\texttt{chat.html}). Khi một peer nhận tin nhắn P2P từ peer khác, nó có thể ngay lập tức đẩy tin nhắn lên giao diện trình duyệt thông qua kết nối WebSocket, giúp người dùng thấy tin nhắn gần như tức thời.
 
 \subsection*{2.4.2. So sánh HTTP và WebSocket}
 
@@ -172,7 +172,7 @@ WebSocket là cầu nối giữa "bộ não" P2P (\texttt{peer\_client.py}) và 
 \hline
 \textbf{Tiêu chí} & \textbf{HTTP} & \textbf{WebSocket} \\
 \hline
-Mô hình & Yêu cầu - Phản hồi (Request - Response) & Song công toàn phần (Full-Duplex) \\
+Mô hình & Yêu cầu - Phản hồi (Request - Response) & Full-Duplex \\
 \hline
 Khởi tạo & Luôn do client khởi tạo & Cả client và server đều có thể gửi dữ liệu sau khi kết nối \\
 \hline
