@@ -402,3 +402,175 @@ Sử dụng ứng dụng Postman Desktop để kiểm tra các API.
     \end{lstlisting}
 \end{itemize}
 
+\subsubsection*{Bước 2: Kiểm tra bằng cách gọi API}
+\begin{itemize}
+    \item \textbf{Login: }
+    \begin{itemize}
+        \item \textbf{Phương thức: }POST
+        \item \textbf{URL: }http://127.0.0.1:8001/login
+        \item \textbf{Body tab: }chọn \texttt{raw}, \texttt{JSON} và điền nội dung
+        \begin{lstlisting}
+        {
+            "username": "admin",
+            "password": "password"
+        } 
+        \end{lstlisting}
+        \item Nhấn \textbf{Send}
+        \item \textbf{Kết quả: }Status code \texttt{200 OK}
+        \begin{lstlisting}
+        {
+            "status": "success",
+            "message": "Login successful",
+            "username": "admin",
+            "token": "token_admin"
+        }
+        \end{lstlisting}
+        \begin{figure}[H]
+            \centering
+            \setlength{\fboxsep}{2pt}
+            \setlength{\fboxrule}{0.5pt}
+            \fbox{\includegraphics[scale=0.5]{Picture/hcmut.png}}
+            \caption{Giao diện gửi yêu cầu \texttt{/login}}
+        \end{figure}
+    \end{itemize}
+
+    \item \textbf{Register User: }
+    \begin{itemize}
+        \item \textbf{Phương thức: }POST
+        \item \textbf{URL: }http://127.0.0.1:8001/register
+        \item \textbf{Body tab: }chọn \texttt{raw}, \texttt{JSON} và điền nội dung
+        \begin{lstlisting}
+        {
+            "username": "alice",
+            "password": "alice123"
+        }
+        \end{lstlisting}
+        \item Nhấn \textbf{Send}
+        \item \textbf{Kết quả: }Status code \texttt{200 OK}
+        \begin{lstlisting}
+        {
+            "status": "success",
+            "message": "User registered successfully",
+            "username": "alice"
+        }
+        \end{lstlisting}
+        \begin{figure}[H]
+            \centering
+            \setlength{\fboxsep}{2pt}
+            \setlength{\fboxrule}{0.5pt}
+            \fbox{\includegraphics[scale=0.5]{Picture/hcmut.png}}
+            \caption{Giao diện gửi yêu cầu \texttt{/register}}
+        \end{figure}
+    \end{itemize}
+
+    \item \textbf{Peer Registration (submit-info): }
+    \begin{itemize}
+        \item \textbf{Phương thức: }POST
+        \item \textbf{URL: }http://127.0.0.1:8001/submit-info
+        \item \textbf{Body tab: }chọn \texttt{raw}, \texttt{JSON} và điền nội dung
+        \begin{lstlisting}
+        {
+            "username": "alice",
+            "ip": "127.0.0.1",
+            "port": 9101,
+            "channels": ["general"]
+        }
+        \end{lstlisting}
+        \item Nhấn \textbf{Send}
+        \item \textbf{Kết quả: }Status code \texttt{200 OK}
+        \begin{lstlisting}
+        {
+            "status": "success",
+            "message": "Peer registered successfully",
+            "peer_id": 0,
+            "total_peers": 1
+        }
+        \end{lstlisting}
+        \begin{figure}[H]
+            \centering
+            \fbox{\includegraphics[scale=0.5]{Picture/hcmut.png}}
+            \caption{Đăng ký thông tin Peer qua endpoint \texttt{/submit-info}}
+        \end{figure}
+    \end{itemize}
+
+    \item \textbf{Join Channel (add-list): }
+    \begin{itemize}
+        \item \textbf{Phương thức: }POST
+        \item \textbf{URL: }http://127.0.0.1:8001/add-list
+        \item \textbf{Body tab: }chọn \texttt{raw}, \texttt{JSON} và điền nội dung
+        \begin{lstlisting}
+        {
+            "username": "alice",
+            "channel": "tech-talk"
+        }
+        \end{lstlisting}
+        \item Nhấn \textbf{Send}
+        \item \textbf{Kết quả: }Status code \texttt{200 OK}
+        \begin{lstlisting}
+        {
+            "status": "success",
+            "message": "User added to channel successfully",
+            "channel": "tech-talk",
+            "members": ["alice"],
+            "member_count": 1
+        }
+        \end{lstlisting}
+        \begin{figure}[H]
+            \centering
+            \fbox{\includegraphics[scale=0.5]{Picture/hcmut.png}}
+            \caption{Người dùng tham gia kênh qua endpoint \texttt{/add-list}}
+        \end{figure}
+    \end{itemize}
+
+    \item \textbf{Get Peer List: }
+    \begin{itemize}
+        \item \textbf{Phương thức: }POST
+        \item \textbf{URL: }http://127.0.0.1:8001/get-list
+        \item \textbf{Body tab: }chọn \texttt{raw}, \texttt{JSON} và điền nội dung
+        \begin{lstlisting}
+        {}
+        \end{lstlisting}
+        \item Nhấn \textbf{Send}
+        \item \textbf{Kết quả: }Status code \texttt{200 OK}
+        \begin{lstlisting}
+        {
+            "status": "success",
+            "peers": [
+                {"username": "alice", "ip": "127.0.0.1", "port": 9101}
+            ],
+            "channels": {
+                "tech-talk": ["alice"]
+            }
+        }
+        \end{lstlisting}
+        \begin{figure}[H]
+            \centering
+            \fbox{\includegraphics[scale=0.5]{Picture/hcmut.png}}
+            \caption{Xem danh sách Peer hiện có qua endpoint \texttt{/get-list}}
+        \end{figure}
+    \end{itemize}
+
+    \item \textbf{Server Status: }
+    \begin{itemize}
+        \item \textbf{Phương thức: }GET
+        \item \textbf{URL: }http://127.0.0.1:8001/status
+        \item \textbf{Body tab: }none
+        \item Nhấn \textbf{Send}
+        \item \textbf{Kết quả: }Status code \texttt{200 OK}
+        \begin{lstlisting}
+        {
+            "status": "online",
+            "stats": {
+                "active_peers": 1,
+                "active_channels": 1
+            }
+        }
+        \end{lstlisting}
+        \begin{figure}[H]
+            \centering
+            \fbox{\includegraphics[scale=0.5]{Picture/hcmut.png}}
+            \caption{Kiểm tra trạng thái server qua endpoint \texttt{/status}}
+        \end{figure}
+    \end{itemize}
+
+\end{itemize}
