@@ -379,7 +379,26 @@ Kịch bản này kiểm thử toàn bộ luồng hoạt động của \textbf{�
     \end{figure}
 \end{itemize}
 
-
-
 \subsubsection*{Kết luận:}  
 Toàn bộ luồng hoạt động của ứng dụng chat hybrid — bao gồm khám phá, giao tiếp P2P, chat nhóm, broadcast và duy trì session — đều hoạt động ổn định, đúng với yêu cầu của đề tài. Hệ thống chứng minh tính tích hợp hoàn chỉnh giữa các thành phần HTTP, WebSocket, và P2P.
+
+% -------------------------------------------------------------
+\subsection*{5.2.4. Kiểm thử Ứng dụng Chat Hybrid bằng phần mềm Postman}
+Sử dụng ứng dụng Postman Desktop để kiểm tra các API.
+\subsubsection*{Bước 1: Khởi chạy Tracker Server và các Peer Clients}
+\begin{itemize}
+    \item \textbf{Mở Terminal 1: }Khởi chạy Tracker Server:
+    \begin{lstlisting}[language=bash]
+    python start_chatapp.py --server-ip 0.0.0.0 --server-port 8001
+    \end{lstlisting}
+    \textbf{Kết quả:} Server khởi động thành công và lắng nghe trên port 8001.
+    \begin{lstlisting}[language=bash]
+    ============================================================
+    Starting Chat Tracker Server
+    IP: 0.0.0.0
+    Port: 8001
+    ============================================================
+    [Backend] Listening on port 8001
+    \end{lstlisting}
+\end{itemize}
+
