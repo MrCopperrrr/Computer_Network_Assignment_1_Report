@@ -112,7 +112,6 @@ Chức năng xử lý request, xác thực đăng nhập và quản lý phiên b
 Sử dụng ứng dụng Postman Desktop để kiểm tra luồng xác thực cookie.
 \subsubsection*{Bước 1: Khởi chạy các Server}
 \begin{itemize}
-
     \item \textbf{Mở Terminal 1}, khởi chạy \textit{Backend Server}:
     \begin{lstlisting}[language=bash]
 python start_backend.py --server-ip <local-ip> --server-port 9000
@@ -134,7 +133,66 @@ python start_proxy.py --server-ip 0.0.0.0 --server-port 8080
     \end{lstlisting}
 \end{itemize}
 
+\subsubsection*{Bước 2: Kiểm tra bằng cách gọi các API}
+\begin{itemize}
+    \item \textbf{Truy cập vào trang được bảo vệ (không Cookie):}
+    \begin{itemize}
+        \item \textbf{Phương thức: }GET
+        \item \textbf{URL: } http://<local-ip>:8080/
+        \item Nhấn \textbf{Send}
+        \item \textbf{Kết quả: }Status code \texttt{401 Unauthorized}
+    \begin{figure}[H]
+        \centering
+        \setlength{\fboxsep}{2pt}     
+        \setlength{\fboxrule}{0.5pt}   
+        \fbox{\includegraphics[scale=0.5]{Picture/401PM.png}}
+        \caption{Giao diện Postman khi truy cập trang web được bảo vệ mà không có cookie}
+    \end{figure}
+    \end{itemize}
 
+    \item \textbf{Đăng nhập để nhận được Cookie:}
+    \begin{itemize}
+        \item \textbf{Phương thức: }POST
+        \item \textbf{URL: } http://<local-ip>:8080/login
+        \item Chuyển sang tab \textbf{Body} và chọn \texttt{x-www-form-urlencoded}
+        \item Nhập các cặp key-value sau:
+        \begin{verbatim}
+            `username`: `admin`
+            `password`: `password`
+        \end{verbatim}
+        \item Nhấn \textbf{Send}
+        \item \textbf{Kết quả: }Status code \texttt{200 OK}. Trong tab \texttt{Cookie} của Response, sẽ thấy Cookie \texttt{auth=true}. Postman sẽ tự động lưu và sử dụng cookie này cho các request tiếp theo đến ip này.
+    \begin{figure}[H]
+        \centering
+        \setlength{\fboxsep}{2pt}     
+        \setlength{\fboxrule}{0.5pt}   
+        \fbox{\includegraphics[scale=0.5]{Picture/loginokPM.png}}
+        \caption{Giao diện Postman khi truy cập trang web thành công}
+    \end{figure}
+    \begin{figure}[H]
+        \centering
+        \setlength{\fboxsep}{2pt}     
+        \setlength{\fboxrule}{0.5pt}   
+        \fbox{\includegraphics[scale=0.5]{Picture/loginokcookiePM.png}}
+        \caption{Giao diện Postman khi truy cập thành công cookie đã thiết lập }
+    \end{figure}
+    \end{itemize}
+
+    \item \textbf{Truy cập vào trang được bảo vệ (có Cookie):}
+    \begin{itemize}
+        \item \textbf{Phương thức: }GET
+        \item \textbf{URL: } http://<local-ip>:8080/
+        \item Nhấn \textbf{Send}
+        \item \textbf{Kết quả: }Status code \texttt{200 OK}. Body của response sẽ chứa nội dung của trang \texttt{index.htm}
+    \begin{figure}[H]
+        \centering
+        \setlength{\fboxsep}{2pt}     
+        \setlength{\fboxrule}{0.5pt}   
+        \fbox{\includegraphics[scale=0.5]{Picture/reloadPM.png}}
+        \caption{Giao diện Postman khi truy cập trang web được bảo vệ có cookie}
+    \end{figure}
+    \end{itemize}
+\end{itemize}
 
 
 % -------------------------------------------------------------
