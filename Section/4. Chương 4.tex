@@ -15,7 +15,7 @@ Chương này trình bày chi tiết các khía cạnh kỹ thuật trong quá t
     
     \item \textbf{HTML5, CSS3, JavaScript (ES6)}:  
     Dùng để xây dựng toàn bộ \textbf{frontend} — giao diện web của hệ thống.  
-    Kết hợp HTML và CSS để tạo giao diện hiện đại, trong khi JavaScript (với WebSocket và API Fetch) đảm nhận phần logic tương tác thời gian thực.
+    Kết hợp HTML và CSS để tạo giao diện hiện đại, trong khi JavaScript đảm nhận phần logic tương tác thời gian thực.
 \end{itemize}
 
 \subsection*{4.1.2. Các thư viện Python chính sử dụng}
@@ -53,9 +53,6 @@ Chương này trình bày chi tiết các khía cạnh kỹ thuật trong quá t
     \item \textbf{Fetch API}:  
     Được sử dụng để gửi các yêu cầu HTTP không đồng bộ (asynchronous requests), ví dụ như trong quá trình xác thực \texttt{/confirm-login} hoặc khởi tạo session cookie.
 
-    \item \textbf{localStorage}:  
-    Cơ chế lưu trữ phía client của trình duyệt. Dự án tận dụng localStorage để duy trì \textbf{phiên làm việc} (session) của người dùng, cho phép họ tự động kết nối lại sau khi tải lại trang hoặc đóng mở tab.
-
     \item \textbf{Developer Tools (F12)}:  
     Công cụ gỡ lỗi tích hợp trong trình duyệt — đặc biệt là:
     \begin{itemize}
@@ -76,7 +73,8 @@ Logic xử lý request được đóng gói trong lớp \texttt{HttpAdapter} (fi
 \subsection*{4.2.1. Khởi tạo Server và Xử lý Đa luồng}
 
 Nền tảng của máy chủ là khả năng xử lý nhiều kết nối đồng thời. Hàm \texttt{run\_backend} chịu trách nhiệm lắng nghe kết nối mới và tạo luồng riêng biệt cho mỗi client.  
-\textbf{Đoạn mã 4.1: Khởi tạo server và tạo luồng mới cho mỗi client trong \texttt{daemon/backend.py}}
+
+\textbf{Đoạn mã: Khởi tạo server và tạo luồng mới cho mỗi client trong \texttt{daemon/backend.py}}
 
 \begin{lstlisting}[language=Python, caption={Khởi tạo server và xử lý đa luồng}]
 def run_backend(ip, port, routes):
@@ -103,7 +101,7 @@ def run_backend(ip, port, routes):
 
 Khi người dùng gửi yêu cầu POST đến \texttt{/login}, hàm \texttt{handle\_login} trong \texttt{HttpAdapter} sẽ được gọi để phân tích dữ liệu form, kiểm tra thông tin đăng nhập và thiết lập cookie nếu hợp lệ.  
 
-\textbf{Đoạn mã 4.2: Logic xử lý đăng nhập và thiết lập cookie trong \texttt{daemon/httpadapter.py}}
+\textbf{Đoạn mã: Logic xử lý đăng nhập và thiết lập cookie trong \texttt{daemon/httpadapter.py}}
 
 \begin{lstlisting}[language=Python, caption={Xử lý đăng nhập và tạo cookie}]
 def handle_login(self, req, resp):
@@ -114,7 +112,8 @@ def handle_login(self, req, resp):
             k, v = pair.split("=", 1)
             creds[k] = v
 
-    if creds.get("username") == "admin" and creds.get("password") == "password":
+    if creds.get("username") == "admin" and 
+        creds.get("password") == "password":
         req.path = "/index.html"
         raw_response = resp.build_response(req)
         body = raw_response.split(b"\r\n\r\n", 1)[1]
@@ -126,7 +125,8 @@ def handle_login(self, req, resp):
         return ("200 OK", headers, body)
     else:
         e = RESP_TEMPLATES["login_failed"]
-        return (e["status"], {"Content-Type": e["content_type"]}, e["body"])
+        return (e["status"], {"Content-Type": e["content_type"]}, 
+            e["body"])
 \end{lstlisting}
 
 \subsection*{4.2.3. Kiểm soát Truy cập dựa trên Cookie (Task 1B)}
@@ -134,14 +134,15 @@ def handle_login(self, req, resp):
 Để bảo vệ các tài nguyên nhạy cảm, hàm \texttt{cookie\_auth\_guard} được triển khai để kiểm tra tính hợp lệ của cookie trong mỗi request.  
 Nếu không có hoặc cookie sai, người dùng sẽ bị chặn truy cập và nhận trang lỗi 401.
 
-\textbf{Đoạn mã 4.3: Logic kiểm tra cookie trong \texttt{daemon/httpadapter.py}}
+\textbf{Đoạn mã: Logic kiểm tra cookie trong \texttt{daemon/httpadapter.py}}
 
 \begin{lstlisting}[language=Python, caption={Kiểm soát truy cập bằng cookie}]
 def cookie_auth_guard(self, req):
     if req.path in ("/", "/index.html"):
         if req.cookies.get("auth") != "true":
             e = RESP_TEMPLATES["unauthorized"]
-            return (e["status"], {"Content-Type": e["content_type"]}, e["body"])
+            return (e["status"], {"Content-Type": e["content_type"]}, 
+                e["body"])
 
     if req.path == "/":
         req.path = "/index.html"
@@ -165,7 +166,7 @@ Tracker Server đóng vai trò là “bộ não” trung tâm của mạng lư�
 Nó sử dụng các biến toàn cục được bảo vệ bởi \texttt{threading.Lock} để đảm bảo an toàn khi nhiều luồng truy cập và ghi dữ liệu đồng thời.  
 Các chức năng chính được hiện thực thông qua các API endpoint.
 
-\textbf{Đoạn mã 4.4: Khai báo biến trạng thái và định nghĩa route trong \texttt{start\_chatapp.py}}
+\textbf{Đoạn mã: Khai báo biến trạng thái và định nghĩa route trong \texttt{start\_chatapp.py}}
 
 \begin{lstlisting}[language=Python, caption={Tracker Server - quản lý trạng thái mạng lưới}]
 peers_list = []
@@ -204,7 +205,7 @@ Khi được khởi động, hàm \texttt{start()} sẽ tạo ra ba luồng ch�
     \item \textbf{Server WebSocket} (\texttt{\_run\_websocket\_server}): Duy trì kênh giao tiếp thời gian thực giữa backend và trình duyệt.
 \end{itemize}
 
-\textbf{Đoạn mã 4.5: Khởi chạy ba server song song trong \texttt{peer\_client.py}}
+\textbf{Đoạn mã: Khởi chạy ba server song song trong \texttt{peer\_client.py}}
 
 \begin{lstlisting}[language=Python, caption={PeerClient - khởi chạy ba server đồng thời}]
 class PeerClient:
@@ -212,13 +213,16 @@ class PeerClient:
     def start(self):
         self.running = True
         
-        p2p_thread = threading.Thread(target=self._run_p2p_server, daemon=True)
+        p2p_thread = threading.Thread(target=self._run_p2p_server, 
+            daemon=True)
         p2p_thread.start()
 
-        http_thread = threading.Thread(target=self._run_http_server, daemon=True)
+        http_thread = threading.Thread(target=self._run_http_server, 
+            daemon=True)
         http_thread.start()
 
-        ws_thread = threading.Thread(target=self._run_websocket_server, daemon=True)
+        ws_thread = threading.Thread(target=self._run_websocket_server, 
+            daemon=True)
         ws_thread.start()
 \end{lstlisting}
 
@@ -237,7 +241,7 @@ Quy trình được thực hiện trong hàm \texttt{join\_channel()}, gồm ba 
     \item Với mỗi peer nhận được, khởi tạo một luồng kết nối TCP riêng (P2P).
 \end{enumerate}
 
-\textbf{Đoạn mã 4.6: Logic tham gia kênh và khám phá peer trong \texttt{peer\_client.py}}
+\textbf{Đoạn mã: Logic tham gia kênh và khám phá peer trong \texttt{peer\_client.py}}
 
 \begin{lstlisting}[language=Python, caption={Tham gia kênh và khởi tạo kết nối P2P}]
 def join_channel(self, channel):
@@ -269,7 +273,7 @@ Sau khi quá trình khám phá hoàn tất, các peer có thể giao tiếp tr�
 Hàm \texttt{connect\_peer()} (bên chủ động) và \texttt{\_handle\_peer\_connection()} (bên bị động) hiện thực quy trình “bắt tay” (handshake) và thiết lập kết nối TCP ổn định.  
 Mỗi kết nối P2P sau đó được gắn với một luồng riêng \texttt{\_listen\_to\_peer()} để lắng nghe tin nhắn đến.
 
-\textbf{Đoạn mã 4.7: Vòng lặp lắng nghe tin nhắn P2P trong \texttt{peer\_client.py}}
+\textbf{Đoạn mã: Vòng lặp lắng nghe tin nhắn P2P trong \texttt{peer\_client.py}}
 
 \begin{lstlisting}[language=Python, caption={Lắng nghe tin nhắn từ peer khác}]
 def _listen_to_peer(self, conn, peer_username):
@@ -315,7 +319,7 @@ Thay vì hoạt động như một ứng dụng dòng lệnh (CLI), tệp \textt
 \subsubsection*{HTTP Server tùy chỉnh}
 Thành phần HTTP Server trong \texttt{peer\_client.py} không chỉ đơn thuần phục vụ file HTML tĩnh, mà còn chủ động \textit{``tiêm dữ liệu cấu hình''} (\textit{injection}) vào file \texttt{chat.html} trước khi gửi đến trình duyệt. Dữ liệu này giúp giao diện web nhận biết được thông tin khởi tạo (ví dụ: \texttt{username}, \texttt{peerPort}) để bắt đầu giao tiếp với backend.
 
-\begin{lstlisting}[language=Python, caption={Logic "tiêm" dữ liệu vào HTML trong \texttt{peer\_client.py}}, label={lst:inject}]
+\begin{lstlisting}[language=Python, caption={Logic truyền dữ liệu vào HTML trong \texttt{peer\_client.py}}, label={lst:inject}]
 def do_GET(self):
     if self.path == '/www/chat.html' or self.path == '/':
         # ...
