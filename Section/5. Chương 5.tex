@@ -306,7 +306,7 @@ Kịch bản này kiểm thử toàn bộ luồng hoạt động của \textbf{�
         \centering
         \setlength{\fboxsep}{2pt}     
         \setlength{\fboxrule}{0.5pt}   
-        \fbox{\includegraphics[scale=0.25]{Picture/login3acc.png}}
+        \fbox{\includegraphics[scale=0.23]{Picture/login3acc.png}}
         \caption{Giao diện khi truy cập trang đăng nhập}
     \end{figure}
     
@@ -316,7 +316,7 @@ Kịch bản này kiểm thử toàn bộ luồng hoạt động của \textbf{�
         \centering
         \setlength{\fboxsep}{2pt}     
         \setlength{\fboxrule}{0.5pt}   
-        \fbox{\includegraphics[scale=0.25]{Picture/chatui.png}}
+        \fbox{\includegraphics[scale=0.23]{Picture/chatui.png}}
         \caption{Giao diện sau khi đăng nhập thành công sẵn sàng chat}
     \end{figure}
 \end{itemize}
@@ -329,7 +329,7 @@ Kịch bản này kiểm thử toàn bộ luồng hoạt động của \textbf{�
         \centering
         \setlength{\fboxsep}{2pt}     
         \setlength{\fboxrule}{0.5pt}   
-        \fbox{\includegraphics[scale=0.25]{Picture/3general.png}}
+        \fbox{\includegraphics[scale=0.23]{Picture/3general.png}}
         \caption{Giao diện 3 người chat ở nhóm \#general}
     \end{figure}
     \item \textbf{Test 2:} Alice, Bob, John chat cùng nhau ở \#broadcast \\
@@ -338,7 +338,7 @@ Kịch bản này kiểm thử toàn bộ luồng hoạt động của \textbf{�
         \centering
         \setlength{\fboxsep}{2pt}     
         \setlength{\fboxrule}{0.5pt}   
-        \fbox{\includegraphics[scale=0.25]{Picture/3broadcast.png}}
+        \fbox{\includegraphics[scale=0.23]{Picture/3broadcast.png}}
         \caption{Giao diện 3 người chat ở nhóm \#broadcast}
     \end{figure}
     \item \textbf{Test 3:} Alice chat broadcast, Bob và John ở \#general (hoặc Bob chat broadcast, John chat broadcast và 2 người còn lại ở \#general)\\
@@ -347,7 +347,7 @@ Kịch bản này kiểm thử toàn bộ luồng hoạt động của \textbf{�
         \centering
         \setlength{\fboxsep}{2pt}     
         \setlength{\fboxrule}{0.5pt}   
-        \fbox{\includegraphics[scale=0.25]{Picture/1broad2gen.png}}
+        \fbox{\includegraphics[scale=0.23]{Picture/1broad2gen.png}}
         \caption{Giao diện Bob và John ở \#general, Alice broadcast}
     \end{figure}
     \item \textbf{Test 4:} Alice chat riêng với Bob (hoặc Alice chat riêng với John, Bob chat riêng với John)\\
@@ -356,7 +356,7 @@ Kịch bản này kiểm thử toàn bộ luồng hoạt động của \textbf{�
         \centering
         \setlength{\fboxsep}{2pt}     
         \setlength{\fboxrule}{0.5pt}   
-        \fbox{\includegraphics[scale=0.25]{Picture/alicebob.png}}
+        \fbox{\includegraphics[scale=0.23]{Picture/alicebob.png}}
         \caption{Giao diện Alice và Bob chat riêng}
     \end{figure}
     \item \textbf{Test 5:} John chat broadcast, Alice chat riêng với Bob (hoặc Bob chat broadcast, Alice chat broadcast và 2 người còn lại chat riêng với nhau)\\
@@ -365,7 +365,7 @@ Kịch bản này kiểm thử toàn bộ luồng hoạt động của \textbf{�
         \centering
         \setlength{\fboxsep}{2pt}     
         \setlength{\fboxrule}{0.5pt}   
-        \fbox{\includegraphics[scale=0.25]{Picture/johnbroadtoprivate.png}}
+        \fbox{\includegraphics[scale=0.23]{Picture/johnbroadtoprivate.png}}
         \caption{Giao diện Alice và Bob chat riêng, John broadcast}
     \end{figure}
     \item \textbf{Test 6:} Tạo channel mới, cả 3 đều tham gia chat.\\
@@ -374,7 +374,7 @@ Kịch bản này kiểm thử toàn bộ luồng hoạt động của \textbf{�
         \centering
         \setlength{\fboxsep}{2pt}     
         \setlength{\fboxrule}{0.5pt}   
-        \fbox{\includegraphics[scale=0.25]{Picture/CN04.png}}
+        \fbox{\includegraphics[scale=0.23]{Picture/CN04.png}}
         \caption{Giao diện tạo nhóm mới và chat}
     \end{figure}
 \end{itemize}
@@ -429,7 +429,7 @@ Sử dụng ứng dụng Postman Desktop để kiểm tra các API.
             \centering
             \setlength{\fboxsep}{2pt}
             \setlength{\fboxrule}{0.5pt}
-            \fbox{\includegraphics[scale=0.5]{Picture/hcmut.png}}
+            \fbox{\includegraphics[scale=0.5]{Picture/loginAPIPM.png}}
             \caption{Giao diện gửi yêu cầu \texttt{/login}}
         \end{figure}
     \end{itemize}
@@ -441,8 +441,8 @@ Sử dụng ứng dụng Postman Desktop để kiểm tra các API.
         \item \textbf{Body tab: }chọn \texttt{raw}, \texttt{JSON} và điền nội dung
         \begin{lstlisting}
         {
-            "username": "alice",
-            "password": "alice123"
+            "username": "joe",
+            "password": "joe123"
         }
         \end{lstlisting}
         \item Nhấn \textbf{Send}
@@ -451,14 +451,14 @@ Sử dụng ứng dụng Postman Desktop để kiểm tra các API.
         {
             "status": "success",
             "message": "User registered successfully",
-            "username": "alice"
+            "username": "joe"
         }
         \end{lstlisting}
         \begin{figure}[H]
             \centering
             \setlength{\fboxsep}{2pt}
             \setlength{\fboxrule}{0.5pt}
-            \fbox{\includegraphics[scale=0.5]{Picture/hcmut.png}}
+            \fbox{\includegraphics[scale=0.5]{Picture/registerAPIPM.png}}
             \caption{Giao diện gửi yêu cầu \texttt{/register}}
         \end{figure}
     \end{itemize}
@@ -470,9 +470,9 @@ Sử dụng ứng dụng Postman Desktop để kiểm tra các API.
         \item \textbf{Body tab: }chọn \texttt{raw}, \texttt{JSON} và điền nội dung
         \begin{lstlisting}
         {
-            "username": "alice",
+            "username": "joe",
             "ip": "127.0.0.1",
-            "port": 9101,
+            "port": 9110,
             "channels": ["general"]
         }
         \end{lstlisting}
@@ -488,7 +488,7 @@ Sử dụng ứng dụng Postman Desktop để kiểm tra các API.
         \end{lstlisting}
         \begin{figure}[H]
             \centering
-            \fbox{\includegraphics[scale=0.5]{Picture/hcmut.png}}
+            \fbox{\includegraphics[scale=0.6]{Picture/submitinfoAPIPM.png}}
             \caption{Đăng ký thông tin Peer qua endpoint \texttt{/submit-info}}
         \end{figure}
     \end{itemize}
@@ -500,8 +500,8 @@ Sử dụng ứng dụng Postman Desktop để kiểm tra các API.
         \item \textbf{Body tab: }chọn \texttt{raw}, \texttt{JSON} và điền nội dung
         \begin{lstlisting}
         {
-            "username": "alice",
-            "channel": "tech-talk"
+            "username": "joe",
+            "channel": "CN04"
         }
         \end{lstlisting}
         \item Nhấn \textbf{Send}
@@ -510,14 +510,16 @@ Sử dụng ứng dụng Postman Desktop để kiểm tra các API.
         {
             "status": "success",
             "message": "User added to channel successfully",
-            "channel": "tech-talk",
-            "members": ["alice"],
+            "channel": "CN04",
+            "members": [
+                "joe"
+            ],
             "member_count": 1
         }
         \end{lstlisting}
         \begin{figure}[H]
             \centering
-            \fbox{\includegraphics[scale=0.5]{Picture/hcmut.png}}
+            \fbox{\includegraphics[scale=0.6]{Picture/addlistAPIPM.png}}
             \caption{Người dùng tham gia kênh qua endpoint \texttt{/add-list}}
         \end{figure}
     \end{itemize}
@@ -536,16 +538,31 @@ Sử dụng ứng dụng Postman Desktop để kiểm tra các API.
         {
             "status": "success",
             "peers": [
-                {"username": "alice", "ip": "127.0.0.1", "port": 9101}
+                {
+                    "username": "joe",
+                    "ip": "127.0.0.1",
+                    "port": 9110,
+                    "channels": [
+                        "general",
+                        "CN04"
+                    ]
+                }
             ],
             "channels": {
-                "tech-talk": ["alice"]
-            }
+                "general": [
+                    "joe"
+                ],
+                "CN04": [
+                    "joe"
+                ]
+            },
+            "total_peers": 1,
+            "total_channels": 2
         }
         \end{lstlisting}
         \begin{figure}[H]
             \centering
-            \fbox{\includegraphics[scale=0.5]{Picture/hcmut.png}}
+            \fbox{\includegraphics[scale=0.4]{Picture/getlistAPIPM.png}}
             \caption{Xem danh sách Peer hiện có qua endpoint \texttt{/get-list}}
         \end{figure}
     \end{itemize}
@@ -561,14 +578,15 @@ Sử dụng ứng dụng Postman Desktop để kiểm tra các API.
         {
             "status": "online",
             "stats": {
-                "active_peers": 1,
-                "active_channels": 1
+                "total_peers": 1,
+                "total_channels": 2,
+                "total_users": 12
             }
         }
         \end{lstlisting}
         \begin{figure}[H]
             \centering
-            \fbox{\includegraphics[scale=0.5]{Picture/hcmut.png}}
+            \fbox{\includegraphics[scale=0.4]{Picture/statusAPIPM.png}}
             \caption{Kiểm tra trạng thái server qua endpoint \texttt{/status}}
         \end{figure}
     \end{itemize}
